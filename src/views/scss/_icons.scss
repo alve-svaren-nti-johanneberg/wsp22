@@ -1,0 +1,13 @@
+@import 'font-awesome/variables';
+@import "font-awesome/solid"; 
+
+.login-icon-prefix::before {
+    @extend .fa;
+    content: "#{$fa-var-lock} ";
+}
+
+.create-ad-icon-prefix::before {
+    @extend .fa;
+    
+    content: "#{$fa-var-plus} ";
+}

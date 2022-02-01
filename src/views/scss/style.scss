@@ -1,0 +1,154 @@
+@charset "UTF-8";
+@import "vars";
+@import "icons";
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+}
+
+.logo {
+    font-size: 1.33rem;
+    font-weight: bold;
+}
+
+a {
+    color: $accent-light-text-color;
+}
+
+#navbar {
+    border-bottom: 2px solid $border-color;
+
+    > div {
+        @include limit-width;
+        position: relative;
+        display: flex;
+        width: 100%;
+        justify-content: space-between;
+        padding: 1rem;
+
+        a:not(.button) {
+            text-decoration: none;
+            color: $text-color;
+            transition: 0.2s opacity;
+
+            &:hover {
+                opacity: 0.6;
+            }
+        }
+
+        > ul {
+            align-items: center;
+            list-style: none;
+            padding: 0;
+            display: flex;
+            gap: 1.2rem;
+            margin: 0;
+
+            li {
+                display: inline-flex;
+            }
+        }
+    }
+}
+
+h1 {
+    font-weight: bold;
+    font-size: 3rem;
+}
+
+:root {
+    font-family: "Roboto", sans-serif;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+body {
+    background-color: $bg-color;
+}
+
+.card {
+    h1 {
+        font-size: 2rem;
+    }
+
+    background-color: $bg-color-darker;
+    overflow: hidden;
+    border-radius: 1rem;
+}
+
+.center {
+    @include center;
+}
+
+.full-width {
+    display: block;
+    width: 100%;
+}
+
+.panel {
+    @include center;
+    padding: 0 1rem;
+    background-color: $bg-color-dark;
+}
+
+.ad-panel-container {
+    @include center;
+    max-width: 20rem;
+    margin-bottom: 2.25rem;
+    margin-top: 1rem;
+}
+
+form.real-form {
+    @include form-limit-width;
+    margin-top: 2rem;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    input {
+        margin-bottom: 1rem;
+    }
+}
+
+input[type="text"],
+input[type="password"],
+input[type="email"] {
+    box-shadow: $light-shadow;
+    width: 100%;
+    padding: 0.5rem 0.8rem;
+    border: none;
+    border-radius: 0.33rem;
+    font-size: unset;
+    transition: box-shadow 0.5s;
+    line-height: inherit;
+
+    &:focus,
+    &:active {
+        outline: none;
+        box-shadow: $medium-shadow;
+    }
+}
+
+.button,
+button,
+input[type="submit"] {
+    text-decoration: none;
+    color: $accent-text-color;
+    background-color: $accent-color;
+    padding: 0.5rem 0.8rem;
+    border-radius: 0.33rem;
+    transition: opacity 0.2s;
+    text-align: center;
+    border: none;
+    font-size: unset;
+    cursor: pointer;
+    line-height: inherit;
+
+    &:hover {
+        opacity: 0.8;
+    }
+}

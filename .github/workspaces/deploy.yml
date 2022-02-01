@@ -1,0 +1,28 @@
+name: Deploy
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+        branches: [main]
+    # schedule:
+    #     - cron: "0 5 * * */3"
+
+jobs:
+    build:
+        runs-on: ubuntu-latest
+        name: Build and deploy website to https://blocketklon.svaren.dev
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Upload Files to server
+              uses: Creepios/sftp-action@v1.0.3
+              with:
+                  host: ${{ secrets.host }}
+                  port: 2022
+                  username: "github.07314a3b"
+                  password: ${{ secrets.password }}
+                  localPath: "./src/"
+                  remotePath: "./"

@@ -1,0 +1,10 @@
+h1.center Skapa konto
+
+form.real-form action="/register" method="post"
+  input.full-width type="email" placeholder="Email" name="email"/
+  input.full-width type="password" placeholder="Lösenord" name="password"/
+  input.full-width type="password" placeholder="Bekräfta lösenord" name="confirm-password"/
+  input type="submit" value="Skapa konto"/
+  p
+    | Har du redan ett konto? 
+    a href="/login" Logga in
