@@ -12,3 +12,6 @@ article.card
     section.description
       - ad.content.split("\n").each do |paragraph|
         p = paragraph
+    
+    form action="/ad/#{ad.id}/delete" method="post"
+      input.destructive type="submit" value="Ta bort annons"

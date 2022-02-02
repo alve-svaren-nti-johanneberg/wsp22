@@ -58,6 +58,16 @@ a {
     color: $red;
 }
 
+.success {
+    color: $green;
+}
+
+.msg {
+    @include limit-width;
+    @include center;
+    background-color: $bg-color;
+}
+
 h1 {
     font-weight: bold;
     font-size: 3rem;
@@ -202,4 +212,8 @@ input[type="submit"] {
     font-size: unset;
     cursor: pointer;
     line-height: inherit;
+
+    &.destructive {
+        background-color: $red;
+    }
 }

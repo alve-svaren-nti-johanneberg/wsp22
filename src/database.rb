@@ -3,16 +3,16 @@
 require 'bcrypt'
 require 'sqlite3'
 
+def db
+  tmp = SQLite3::Database.new 'data.db'
+  tmp.results_as_hash = true
+  tmp
+end
+
 class DbModel
   def self.table_name; end
 
   def self.create_table; end
-
-  def self.db
-    tmp = SQLite3::Database.new 'data.db'
-    tmp.results_as_hash = true
-    tmp
-  end
 end
 
 class User < DbModel
@@ -122,6 +122,10 @@ class Ad < DbModel
     db.execute("SELECT * FROM Ads WHERE #{wildcards.join(' AND ')}", words).map do |data|
       Ad.new(data)
     end
+  end
+
+  def delete
+    db.execute('DELETE FROM Ads WHERE id = ?', @id)
   end
 end
 

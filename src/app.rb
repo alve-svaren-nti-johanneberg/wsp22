@@ -38,6 +38,11 @@ get '/ad/new' do
 end
 
 post '/ad/new' do
+  if (params[:price] || '0').to_i.negative?
+    session[:form_error] = 'Priset måste vara positivt'
+    session[:old_data] = params
+    redirect '/ad/new'
+  end
   ad = Ad.create(params[:title], params[:content], params[:price], current_user.id, params[:postal_code])
   redirect "/ad/#{ad}"
 end
@@ -53,6 +58,18 @@ end
 
 get '/ad/:id/edit' do
   slim :'ad/update'
+end
+
+post '/ad/:id/delete' do
+  ad = Ad.find_by_id(params[:id])
+  if ad
+    ad.delete
+    session[:msg] = 'Annonsen har raderats'
+    session[:success] = true
+    redirect '/'
+  else
+    slim :'ad/404'
+  end
 end
 
 get '/login' do
