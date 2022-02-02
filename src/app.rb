@@ -40,12 +40,22 @@ get '/ad/new' do
 end
 
 post '/ad/new' do
-  if (params[:price] || '0').to_i.negative?
-    session[:form_error] = 'Priset måste vara positivt'
+  error = nil
+
+  postal_code = params[:postal_code].delete(' ').delete('-').to_i
+  error = 'Postnummret måste vara 5 siffror' unless postal_code.to_s.length == 5
+  error = 'Priset måste vara positivt' if params[:price].to_i.negative?
+  error = 'Du måste ange ett postnummer' if params[:postal_code].empty?
+  error = 'Du måste ange en beskrivning' if params[:content].empty?
+  error = 'Du måste ange en titel' if params[:title].empty?
+
+  if error
     session[:old_data] = params
-    redirect '/ad/new'
+    session[:form_error] = error
+    return redirect '/ad/new'
   end
-  ad = Ad.create(params[:title], params[:content], params[:price].to_i, current_user.id, params[:postal_code])
+
+  ad = Ad.create(params[:title], params[:content], params[:price].to_i, current_user.id, postal_code)
   redirect "/ad/#{ad}"
 end
 
@@ -88,7 +98,7 @@ get '/register' do
 end
 
 get '/search' do
-  ads = Ad.search(params[:query].split(' '))
+  ads = Ad.search((params[:query] || '').split(' '))
   slim :search, locals: { ads: ads }
 end
 

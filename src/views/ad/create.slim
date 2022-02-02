@@ -2,6 +2,7 @@ article.card
   form action="/ad/new" method="post"
     / img src="/userimg/#{ad.image_id}" alt="Bild på #{ad.title}"
     div.card-indent
+      p.error = temp_session :form_error
       header
         div
           input.flat type="text" placeholder="Ange titel" name="title"
