@@ -16,7 +16,7 @@ class DbModel
 end
 
 class User < DbModel
-  attr_reader :id, :email
+  attr_reader :id, :email, :name
 
   def self.table_name
     'Users'
@@ -25,6 +25,7 @@ class User < DbModel
   def self.create_table
     db.execute("CREATE TABLE IF NOT EXISTS \"#{table_name}\" (
       \"id\"	INTEGER NOT NULL UNIQUE,
+      \"name\"	TEXT NOT NULL UNIQUE,
       \"email\"	TEXT NOT NULL UNIQUE,
       \"password_hash\"	BLOB NOT NULL,
       PRIMARY KEY(\"id\" AUTOINCREMENT))")
@@ -34,6 +35,7 @@ class User < DbModel
     super()
     @id = data['id']
     @email = data['email']
+    @name = data['name']
     @password_hash = BCrypt::Password.new(data['password_hash'])
   end
 
@@ -66,7 +68,7 @@ class User < DbModel
 end
 
 class Ad < DbModel
-  attr_reader :id, :price, :seller, :title, :content, :sold
+  attr_reader :id, :price, :seller, :title, :content, :sold, :postal_code
 
   def self.table_name
     'Ads'
@@ -80,6 +82,7 @@ class Ad < DbModel
       \"content\"	TEXT NOT NULL,
       \"sold\"	INTEGER NOT NULL DEFAULT 0,
       \"seller\"	INTEGER NOT NULL,
+      \"postal_code\" TEXT NOT NULL,
       FOREIGN KEY(\"seller\") REFERENCES \"Users\"(\"id\"),
       PRIMARY KEY(\"id\" AUTOINCREMENT))")
   end
@@ -88,8 +91,9 @@ class Ad < DbModel
     super()
     @id = data['id']
     @price = data['price']
-    @seller = User.find_by_id(['seller'])
+    @seller = User.find_by_id(data['seller'])
     @title = data['title']
+    @postal_code = data['postal_code']
     @content = data['content']
     @sold = data['sold']
   end
@@ -99,11 +103,25 @@ class Ad < DbModel
     data && Ad.new(data)
   end
 
-  def self.create(title, content, price, seller_id)
+  def self.create(title, content, price, seller_id, postal_code)
     session = db
-    session.execute('INSERT INTO Ads (title, content, price, seller) VALUES (?, ?, ?, ?)',
-                    title, content, price, seller_id)
+    session.execute('INSERT INTO Ads (title, content, price, seller, postal_code) VALUES (?, ?, ?, ?, ?)',
+                    title, content, price, seller_id, postal_code)
     session.last_insert_row_id
+  end
+
+  def self.search(words)
+    wildcards = words.map do
+      'title LIKE ?'
+    end
+    words.map! do |word|
+      "%#{word}%"
+    end
+    p wildcards
+    p words
+    db.execute("SELECT * FROM Ads WHERE #{wildcards.join(' AND ')}", words).map do |data|
+      Ad.new(data)
+    end
   end
 end
 

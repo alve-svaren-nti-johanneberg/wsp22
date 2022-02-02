@@ -12,6 +12,7 @@ $red: #ff5252;
 // Sizes:
 $page-width: 72rem;
 $form-width: 24rem;
+$card-width: 40rem;
 
 // Mixins:
 @mixin center {
@@ -26,8 +27,15 @@ $form-width: 24rem;
     margin: 0 auto;
 }
 
+@mixin card-limit-width {
+    max-width: $card-width;
+    margin: 0 auto;
+    width: 100%;
+}
+
 @mixin form-limit-width {
     max-width: $form-width;
+    width: 100%;
     margin: 0 auto;
 }
 

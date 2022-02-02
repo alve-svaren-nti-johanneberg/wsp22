@@ -11,11 +11,17 @@ enable :sessions
 
 also_reload 'database.rb', 'utils.rb'
 
+allowed_without_login = %w[/ /login /register /style.css /favicon.ico]
+
 before do
-  if session[:user_id]
-    puts "User #{current_user.email} is logged in"
-    current_user
+  if !current_user && !allowed_without_login.include?(request.path_info)
+    session[:return_to] = request.path_info
+    redirect '/login'
   end
+  # if session[:user_id]
+  #   puts "User #{current_user.email} is logged in"
+  #   current_user
+  # end
 end
 
 get '/' do
@@ -31,8 +37,18 @@ get '/ad/new' do
   slim :'ad/create'
 end
 
+post '/ad/new' do
+  ad = Ad.create(params[:title], params[:content], params[:price], current_user.id, params[:postal_code])
+  redirect "/ad/#{ad}"
+end
+
 get '/ad/:id' do
-  slim :'ad/view'
+  ad = Ad.find_by_id(params[:id])
+  if ad
+    slim :'ad/view', locals: { ad: ad }
+  else
+    slim :'ad/404'
+  end
 end
 
 get '/ad/:id/edit' do
@@ -53,8 +69,8 @@ get '/register' do
 end
 
 get '/search' do
-  params[:query]
-  slim :search
+  ads = Ad.search(params[:query].split(' '))
+  slim :search, locals: { ads: ads }
 end
 
 post '/register' do

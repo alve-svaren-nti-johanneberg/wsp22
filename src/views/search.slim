@@ -1,0 +1,11 @@
+
+h1.center Annonser
+section.limit-width
+  p = "#{ads.count} annonser matchar sökningen"
+  - ads.each do |ad|
+    a.search-result href="/ad/#{ad.id}"
+      article.card
+        / img src="/userimg/#{ad.image_id}" alt="Bild på #{ad.title}"
+        div.card-indent
+          h1 = ad.title
+          h2 = "#{ad.price} kr"

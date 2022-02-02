@@ -1,0 +1,13 @@
+article.card
+  form action="/ad/new" method="post"
+    / img src="/userimg/#{ad.image_id}" alt="Bild på #{ad.title}"
+    div.card-indent
+      header
+        div
+          input.flat type="text" placeholder="Ange titel" name="title"
+          input.flat type="text" placeholder="Pris (i kr)" name="price"
+        input.flat type="text" placeholder="Ange postnummer" name="postal_code"
+
+      textarea.flat name="content" placeholder="Beskrivning av vara"
+
+      input.full-width type="submit" value="Skapa annons"
