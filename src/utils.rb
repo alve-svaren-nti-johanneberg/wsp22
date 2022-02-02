@@ -12,3 +12,7 @@ end
 def current_user
   User.find_by_id(session[:user_id])
 end
+
+def validate_email(email)
+  (/\A[a-z0-9+-_.]+@[a-z\d\-.]+\.[a-z]+\z/i).match?(email)
+end

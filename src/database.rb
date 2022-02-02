@@ -2,6 +2,7 @@
 
 require 'bcrypt'
 require 'sqlite3'
+require_relative 'utils'
 
 def db
   tmp = SQLite3::Database.new 'data.db'
@@ -44,6 +45,7 @@ class User < DbModel
   def self.create(email, password)
     hash = BCrypt::Password.create(password)
     session = db
+    return nil unless validate_email(email)
     return nil unless session.execute('SELECT * FROM Users WHERE email = ?', email).empty?
 
     session.execute('INSERT INTO Users (email, password_hash) VALUES (?, ?)', email, hash)
