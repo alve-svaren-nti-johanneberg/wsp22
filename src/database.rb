@@ -44,12 +44,9 @@ class User < DbModel
   def self.create(email, password)
     hash = BCrypt::Password.create(password)
     session = db
-    begin
-      session.execute('INSERT INTO Users (email, password_hash) VALUES (?, ?)', email, hash)
-    rescue SQLite3::ConstraintException
-      # Email already exists
-      return nil
-    end
+    return nil unless session.execute('SELECT * FROM Users WHERE email = ?', email).empty?
+
+    session.execute('INSERT INTO Users (email, password_hash) VALUES (?, ?)', email, hash)
     session.last_insert_row_id
   end
 
@@ -59,6 +56,8 @@ class User < DbModel
   end
 
   def self.find_by_email(email)
+    return nil if email.empty?
+
     data = db.execute('SELECT * FROM Users WHERE email = ?', email).first
     data && User.new(data)
   end
