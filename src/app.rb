@@ -108,8 +108,14 @@ post '/register' do
     session[:form_error] = 'Du måste ange en giltig e-postadress'
     return redirect '/register'
   end
+
+  if params[:name].empty?
+    session[:old_data] = params
+    session[:form_error] = 'Du måste ange ett namn'
+  end
+
   if params[:password] == params[:'confirm-password']
-    user_id = User.create(params[:email], params[:password])
+    user_id = User.create(params[:name], params[:email], params[:password])
     if !user_id.nil?
       session[:user_id] = user_id
       redirect(temp_session(:return_to) || '/')

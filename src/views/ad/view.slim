@@ -6,9 +6,9 @@ article.card
         h1 = ad.title
         h2 = "#{ad.price} kr"
       p.seller-info
-        | säljs av
-        a href="/user/#{ad.seller.id}" = ad.seller.email
-        | · #{ad.postal_code}
+        | säljs av 
+        a href="/user/#{ad.seller.id}" = ad.seller.name
+        |  · #{ad.postal_code}
     section.description
       - ad.content.split("\n").each do |paragraph|
         p = paragraph

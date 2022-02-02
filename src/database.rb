@@ -28,7 +28,7 @@ class User < DbModel
   def self.create_table
     db.execute("CREATE TABLE IF NOT EXISTS \"#{table_name}\" (
       \"id\"	INTEGER NOT NULL UNIQUE,
-      \"name\"	TEXT NOT NULL UNIQUE,
+      \"name\"	TEXT NOT NULL,
       \"email\"	TEXT NOT NULL UNIQUE,
       \"password_hash\"	BLOB NOT NULL,
       PRIMARY KEY(\"id\" AUTOINCREMENT))")
@@ -42,12 +42,12 @@ class User < DbModel
     @password_hash = BCrypt::Password.new(data['password_hash'])
   end
 
-  def self.create(email, password)
+  def self.create(name, email, password)
     hash = BCrypt::Password.create(password)
     session = db
     return nil unless session.execute('SELECT * FROM Users WHERE email = ?', email).empty?
 
-    session.execute('INSERT INTO Users (email, password_hash) VALUES (?, ?)', email, hash)
+    session.execute('INSERT INTO Users (name, email, password_hash) VALUES (?, ?, ?)', name, email, hash)
     session.last_insert_row_id
   end
 

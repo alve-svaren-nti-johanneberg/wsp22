@@ -20,7 +20,7 @@ html lang="sv"
           - if current_user
             li
               | Inloggad som 
-              span = current_user.email
+              a.normal href="/user/#{current_user.id}" = current_user.name
             li
               a href="/logout" Logga ut
           - else

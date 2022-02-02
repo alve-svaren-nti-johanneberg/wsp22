@@ -7,6 +7,7 @@ form.real-form action="/register" method="post"
     p 
       |Ett konto krävs för att komma åt 
       code = session[:return_to]
+  input.full-width type="text" placeholder="Namn" title="Detta kommer synas i dina annonser och meddelanden" name="name" pattern="[a-zA-Z\-]+" /
   input.full-width type="email" placeholder="Email" name="email"/
   input.full-width type="password" placeholder="Lösenord" name="password"/
   input.full-width type="password" placeholder="Bekräfta lösenord" name="confirm-password"/
