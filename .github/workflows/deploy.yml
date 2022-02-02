@@ -25,4 +25,4 @@ jobs:
                   localPath: "./src/"
                   remotePath: "./"
             - name: Restart remote pterodactyl server
-              run: "curl -H 'Authorization: Bearer ${{ secrets.pterodactyl_api_token }}' -H 'Content-Type: application/json' -d '{\"signal\": \"restart\"}' ${{ secrets.pterodactyl_app_url }}/api/client/servers/${{ secrets.pterodactyl_server_id }}/power"
+              run: 'curl -H ''Authorization: Bearer ${{ secrets.pterodactyl_api_token }}'' -H ''Content-Type: application/json'' -d ''{"signal": "restart"}'' ${{ secrets.pterodactyl_app_url }}/api/client/servers/${{ secrets.pterodactyl_server_id }}/power'
