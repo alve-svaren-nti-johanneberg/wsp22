@@ -11,17 +11,19 @@ enable :sessions
 
 also_reload 'database.rb', 'utils.rb'
 
-allowed_without_login = %w[/ /login /register /style.css /favicon.ico]
+auth_needed = %w[/ad/new]
+ignored_paths = %w[/style.css /favicon.ico]
 
 before do
-  if !current_user && !allowed_without_login.include?(request.path_info)
-    session[:return_to] = request.path_info
+  return if ignored_paths.include? request.path_info
+
+  if !current_user && auth_needed.map { |path| request.path_info.start_with?(path) }.any?
+    session[:return_to] = request.fullpath
     redirect '/login'
   end
-  # if session[:user_id]
-  #   puts "User #{current_user.email} is logged in"
-  #   current_user
-  # end
+  # If the user has gone and done something else than logging in or registering,
+  # make sure to not return back after logging/registering in later
+  !(request.path_info == '/login' || request.path_info == '/register') && session.delete(:return_to)
 end
 
 get '/' do
@@ -43,7 +45,7 @@ post '/ad/new' do
     session[:old_data] = params
     redirect '/ad/new'
   end
-  ad = Ad.create(params[:title], params[:content], params[:price], current_user.id, params[:postal_code])
+  ad = Ad.create(params[:title], params[:content], params[:price].to_i, current_user.id, params[:postal_code])
   redirect "/ad/#{ad}"
 end
 
@@ -93,10 +95,17 @@ end
 post '/register' do
   if params[:password] == params[:'confirm-password']
     user_id = User.create(params[:email], params[:password])
-    session[:user_id] = user_id
-    redirect '/'
+    if !user_id.nil?
+      session[:user_id] = user_id
+      redirect(temp_session(:return_to) || '/')
+    else
+      session[:form_error] = 'Mailadress är redan registrerad'
+      session[:old_data] = params
+      redirect '/register'
+    end
   else
     session[:form_error] = 'Lösenorden matchar inte'
+    session[:old_data] = params
     redirect '/register'
   end
 end
@@ -105,9 +114,10 @@ post '/login' do
   user = User.find_by_email(params[:email])
   if user&.verify_password(params[:password])
     session[:user_id] = user.id
-    redirect '/'
+    redirect(temp_session(:return_to) || '/')
   else
-    session[:form_error] = 'Felaktigt användarnamn eller lösenord'
+    session[:form_error] = 'Felaktig mailadress eller lösenord'
+    session[:old_data] = params
     redirect '/login'
   end
 end

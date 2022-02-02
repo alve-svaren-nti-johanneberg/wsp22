@@ -131,6 +131,10 @@ form.real-form, form.wide-form {
     &.real-form {
         margin-top: 2rem;
         padding: 1rem;
+
+        p {
+            margin-top: 0;
+        }
     }
 
     display: flex;
@@ -142,7 +146,8 @@ form.real-form, form.wide-form {
 
 input[type="text"],
 input[type="password"],
-input[type="email"] {
+input[type="email"],
+input[type="number"], textarea {
     appearance: none;
     width: 100%;
     padding: 0.5rem 0.8rem;
@@ -185,13 +190,8 @@ input[type="email"] {
 }
 
 textarea {
-    width: 100%;
     resize: vertical;
-    font-size: unset;
-
-    &:focus {
-        outline: none;
-    }
+    font-family: unset;
 }
 
 .limit-width {

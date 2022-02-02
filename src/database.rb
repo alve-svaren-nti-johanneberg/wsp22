@@ -9,12 +9,14 @@ def db
   tmp
 end
 
+# An abstract class for all database objects
 class DbModel
   def self.table_name; end
 
   def self.create_table; end
 end
 
+# A user
 class User < DbModel
   attr_reader :id, :email, :name
 
@@ -42,7 +44,12 @@ class User < DbModel
   def self.create(email, password)
     hash = BCrypt::Password.create(password)
     session = db
-    session.execute('INSERT INTO Users (email, password_hash) VALUES (?, ?)', email, hash)
+    begin
+      session.execute('INSERT INTO Users (email, password_hash) VALUES (?, ?)', email, hash)
+    rescue SQLite3::ConstraintException
+      # Email already exists
+      return nil
+    end
     session.last_insert_row_id
   end
 
@@ -67,6 +74,7 @@ class User < DbModel
   end
 end
 
+# An ad that a user created
 class Ad < DbModel
   attr_reader :id, :price, :seller, :title, :content, :sold, :postal_code
 
@@ -111,15 +119,14 @@ class Ad < DbModel
   end
 
   def self.search(words)
+    query = words.empty? && 'SELECT * FROM Ads'
     wildcards = words.map do
       'title LIKE ?'
     end
     words.map! do |word|
       "%#{word}%"
     end
-    p wildcards
-    p words
-    db.execute("SELECT * FROM Ads WHERE #{wildcards.join(' AND ')}", words).map do |data|
+    db.execute(query || "SELECT * FROM Ads WHERE #{wildcards.join(' AND ')}", words).map do |data|
       Ad.new(data)
     end
   end
