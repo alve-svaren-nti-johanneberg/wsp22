@@ -20,7 +20,13 @@ jobs:
               with:
                   host: ${{ secrets.host }}
                   port: 2022
-                  username: "github.07314a3b"
+                  username: "github.${{ secrets.pterodactyl_server_id }}"
                   password: ${{ secrets.password }}
                   localPath: "./src/"
                   remotePath: "./"
+    restart:
+        runs-on: alpine/curl
+        name: Restart pterodactyl server
+
+        steps:
+            - run: "curl -H 'Authorization: Bearer ${{ secrets.pterodactyl_api_token }}' -H 'Content-Type: application/json' -d '{\"signal\": \"restart\"}' https://${{ secrets.host }}/api/client/servers/${{ secrets.pterodactyl_server_id }}/power"
