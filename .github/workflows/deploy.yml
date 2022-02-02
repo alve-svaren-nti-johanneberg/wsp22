@@ -24,7 +24,5 @@ jobs:
                   password: ${{ secrets.password }}
                   localPath: "./src/"
                   remotePath: "./"
-            - name: Install curl
-              run: "apt update && apt install curl"
             - name: Restart remote pterodactyl server
               run: "curl -H 'Authorization: Bearer ${{ secrets.pterodactyl_api_token }}' -H 'Content-Type: application/json' -d '{\"signal\": \"restart\"}' https://${{ secrets.host }}/api/client/servers/${{ secrets.pterodactyl_server_id }}/power"
