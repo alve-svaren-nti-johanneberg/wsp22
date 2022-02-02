@@ -13,11 +13,6 @@ class DbModel
     tmp.results_as_hash = true
     tmp
   end
-
-  def self.find_by_id(id)
-    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
-    data && User.new(data)
-  end
 end
 
 class User < DbModel
@@ -36,7 +31,7 @@ class User < DbModel
   end
 
   def initialize(data)
-    super
+    super()
     @id = data['id']
     @email = data['email']
     @password_hash = BCrypt::Password.new(data['password_hash'])
@@ -47,6 +42,11 @@ class User < DbModel
     session = db
     session.execute('INSERT INTO Users (email, password_hash) VALUES (?, ?)', email, hash)
     session.last_insert_row_id
+  end
+
+  def self.find_by_id(id)
+    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
+    data && User.new(data)
   end
 
   def self.find_by_email(email)
@@ -81,18 +81,22 @@ class Ad < DbModel
       \"sold\"	INTEGER NOT NULL DEFAULT 0,
       \"seller\"	INTEGER NOT NULL,
       FOREIGN KEY(\"seller\") REFERENCES \"Users\"(\"id\"),
-      PRIMARY KEY(\"id\" AUTOINCREMENT)
-    )")
+      PRIMARY KEY(\"id\" AUTOINCREMENT))")
   end
 
   def initialize(data)
-    super 'Ads'
+    super()
     @id = data['id']
     @price = data['price']
     @seller = User.find_by_id(['seller'])
     @title = data['title']
     @content = data['content']
     @sold = data['sold']
+  end
+
+  def self.find_by_id(id)
+    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
+    data && Ad.new(data)
   end
 
   def self.create(title, content, price, seller_id)

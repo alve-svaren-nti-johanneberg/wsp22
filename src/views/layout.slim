@@ -17,11 +17,18 @@ html lang="sv"
             a.logo href="/"
               | Blocketklon 
         ul
-          li
-            a href="/register"
-              | Skapa konto
-          li
-            a.button.login-icon-prefix href="/login"
-              | Logga in
+          - if current_user
+            li
+              | Inloggad som 
+              span = current_user.email
+            li
+              a href="/logout" Logga ut
+          - else
+            li
+              a href="/register"
+                | Skapa konto
+            li
+              a.button.login-icon-prefix href="/login"
+                | Logga in
 
     main ==yield

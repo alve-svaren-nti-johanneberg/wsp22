@@ -51,9 +51,14 @@ a {
 
             li {
                 display: inline-flex;
+                white-space: pre-wrap;
             }
         }
     }
+}
+
+.error {
+    color: $red;
 }
 
 h1 {
