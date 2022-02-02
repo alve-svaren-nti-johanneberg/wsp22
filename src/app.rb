@@ -103,29 +103,29 @@ get '/search' do
 end
 
 post '/register' do
-  unless validate_email(params[:email])
+  error = nil
+
+  error = 'Lösenorden matchar inte' unless params[:password] == params[:'confirm-password']
+  error = 'Du måste ange ett lösenord' if params[:password].empty?
+  error = 'Du måste ange ett namn' if params[:name].empty?
+  error = 'Du måste ange en giltig e-postadress' unless validate_email(params[:email])
+  error = 'Ditt namn måste vara kortare än 16 tecken' if params[:name].length > 16
+  unless params[:name].match?(/^[a-zA-Z\-_]+$/)
+    error = 'Ditt namn måste bestå av endast bokstäver, bindestreck och understreck'
+  end
+
+  if error
     session[:old_data] = params
-    session[:form_error] = 'Du måste ange en giltig e-postadress'
+    session[:form_error] = error
     return redirect '/register'
   end
 
-  if params[:name].empty?
-    session[:old_data] = params
-    session[:form_error] = 'Du måste ange ett namn'
-  end
-
-  if params[:password] == params[:'confirm-password']
-    user_id = User.create(params[:name], params[:email], params[:password])
-    if !user_id.nil?
-      session[:user_id] = user_id
-      redirect(temp_session(:return_to) || '/')
-    else
-      session[:form_error] = 'Mailadress är redan registrerad'
-      session[:old_data] = params
-      redirect '/register'
-    end
+  user_id = User.create(params[:name], params[:email], params[:password])
+  if !user_id.nil?
+    session[:user_id] = user_id
+    redirect(temp_session(:return_to) || '/')
   else
-    session[:form_error] = 'Lösenorden matchar inte'
+    session[:form_error] = 'Mailadress är redan registrerad'
     session[:old_data] = params
     redirect '/register'
   end

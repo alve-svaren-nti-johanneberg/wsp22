@@ -8,4 +8,4 @@ section.limit-width
         / img src="/userimg/#{ad.image_id}" alt="Bild på #{ad.title}"
         div.card-indent
           h1 = ad.title
-          h2 = "#{ad.price} kr"
+          h2 = get_human_readable_price(ad.price)

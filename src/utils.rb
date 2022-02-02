@@ -16,3 +16,7 @@ end
 def validate_email(email)
   (/\A[a-z0-9+-_.]+@[a-z\d\-.]+\.[a-z]+\z/i).match?(email)
 end
+
+def get_human_readable_price(price)
+  price.positive? ? "#{price} kr" : 'Gratis'
+end

@@ -4,7 +4,7 @@ article.card
     header
       div
         h1 = ad.title
-        h2 = "#{ad.price} kr"
+        h2 = get_human_readable_price(ad.price)
       p.seller-info
         | säljs av 
         a href="/user/#{ad.seller.id}" = ad.seller.name
