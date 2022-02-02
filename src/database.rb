@@ -45,7 +45,6 @@ class User < DbModel
   def self.create(email, password)
     hash = BCrypt::Password.create(password)
     session = db
-    return nil unless validate_email(email)
     return nil unless session.execute('SELECT * FROM Users WHERE email = ?', email).empty?
 
     session.execute('INSERT INTO Users (email, password_hash) VALUES (?, ?)', email, hash)

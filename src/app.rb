@@ -103,6 +103,11 @@ get '/search' do
 end
 
 post '/register' do
+  unless validate_email(params[:email])
+    session[:old_data] = params
+    session[:form_error] = 'Du måste ange en giltig e-postadress'
+    return redirect '/register'
+  end
   if params[:password] == params[:'confirm-password']
     user_id = User.create(params[:email], params[:password])
     if !user_id.nil?
