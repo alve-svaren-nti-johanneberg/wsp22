@@ -4,8 +4,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'slim'
 require 'sassc'
-require 'bcrypt'
-require 'sqlite3'
+require_relative 'database'
 
 enable :sessions
 
