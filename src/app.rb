@@ -75,6 +75,8 @@ end
 post '/ad/:id/delete' do
   ad = Ad.find_by_id(params[:id])
   if ad
+    return status 403 unless ad.seller == current_user
+
     ad.delete
     session[:msg] = 'Annonsen har raderats'
     session[:success] = true

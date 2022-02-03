@@ -12,9 +12,21 @@ end
 
 # An abstract class for all database objects
 class DbModel
+  attr_reader :id
+
   def self.table_name; end
 
   def self.create_table; end
+
+  def initialize(data)
+    @id = data['id']
+  end
+
+  def ==(other)
+    return false if other.nil?
+
+    @id == other.id
+  end
 end
 
 # A user
@@ -35,8 +47,7 @@ class User < DbModel
   end
 
   def initialize(data)
-    super()
-    @id = data['id']
+    super data
     @email = data['email']
     @name = data['name']
     @password_hash = BCrypt::Password.new(data['password_hash'])
@@ -96,7 +107,7 @@ class Ad < DbModel
   end
 
   def initialize(data)
-    super()
+    super data
     @id = data['id']
     @price = data['price']
     @seller = User.find_by_id(data['seller'])
