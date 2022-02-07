@@ -19,7 +19,7 @@ end
 
 def group_number(num, length = 3)
   # 12345 => 12 345
-  num.to_s.chars.reverse.each_slice(length).reverse_each.map { |x| x.reverse.join }.join(' ')
+  format('%i', num).chars.reverse.each_slice(length).reverse_each.map { |x| x.reverse.join }.join(' ')
 end
 
 def get_human_readable_price(price)
