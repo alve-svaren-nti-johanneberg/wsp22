@@ -1,0 +1,10 @@
+
+article.card
+  div.card-indent
+    h1 #{user.name}s profil
+
+    h2 Annonser
+    ul.ad-list
+      - for ad in user.ads
+        li
+          a href="/ad/#{ad.id}" = ad.title

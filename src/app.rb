@@ -14,6 +14,16 @@ also_reload 'database.rb', 'utils.rb'
 auth_needed = %w[/ad/new]
 ignored_paths = %w[/style.css /favicon.ico]
 
+def access_denied
+  status 403
+  slim :'403'
+end
+
+not_found do
+  status 404
+  slim :'404'
+end
+
 before do
   return if ignored_paths.include? request.path_info
 
@@ -65,7 +75,7 @@ get '/ad/:id' do
   if ad
     slim :'ad/view', locals: { ad: ad }
   else
-    slim :'ad/404'
+    raise Sinatra::NotFound
   end
 end
 
@@ -76,14 +86,14 @@ end
 post '/ad/:id/delete' do
   ad = Ad.find_by_id(params[:id])
   if ad
-    return status 403 unless ad.seller == current_user
+    return access_denied unless ad.seller == current_user
 
     ad.delete
     session[:msg] = 'Annonsen har raderats'
     session[:success] = true
     redirect '/'
   else
-    slim :'ad/404'
+    raise Sinatra::NotFound
   end
 end
 
@@ -103,6 +113,13 @@ end
 get '/search' do
   ads = Ad.search((params[:query] || '').split(' '))
   slim :search, locals: { ads: ads }
+end
+
+get '/user/:id' do
+  user = User.find_by_id(params[:id])
+  raise Sinatra::NotFound unless user
+
+  slim :profile, locals: { user: user }
 end
 
 post '/register' do
