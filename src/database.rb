@@ -40,7 +40,7 @@ end
 
 # A user
 class User < DbModel
-  attr_reader :id, :email, :name
+  attr_reader :email, :name
 
   def self.table_name
     'Users'
@@ -93,7 +93,7 @@ end
 
 # An ad that a user created
 class Ad < DbModel
-  attr_reader :id, :price, :seller, :title, :content, :sold, :postal_code
+  attr_reader :price, :seller, :title, :content, :sold, :postal_code
 
   def self.table_name
     'Ads'
@@ -114,7 +114,6 @@ class Ad < DbModel
 
   def initialize(data)
     super data
-    @id = data['id']
     @price = data['price']
     @seller = User.find_by_id(data['seller'])
     @title = data['title']
