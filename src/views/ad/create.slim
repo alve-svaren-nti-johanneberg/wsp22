@@ -5,7 +5,7 @@ article.card
       p.error = temp_session :form_error
       header
         div
-          input.flat type="text" placeholder="Ange titel" name="title"
+          input.flat type="text" maxlength="64" placeholder="Ange titel" name="title"
           input.flat type="number" oninput="this.reportValidity()" min="0" max="1000000000000" placeholder="Pris (i kr)" name="price"
         input.flat type="text" pattern="\d{5}" placeholder="Ange postnummer" name="postal_code"
 
