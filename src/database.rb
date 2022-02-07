@@ -18,6 +18,10 @@ class DbModel
 
   def self.create_table; end
 
+  def table_name
+    self.class.table_name
+  end
+
   def initialize(data)
     @id = data['id']
   end
@@ -26,6 +30,11 @@ class DbModel
     return false if other.nil?
 
     @id == other.id
+  end
+
+  def self.find_by_id(id)
+    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
+    data && self.class.new(data)
   end
 end
 
@@ -43,6 +52,7 @@ class User < DbModel
       \"name\"	TEXT NOT NULL,
       \"email\"	TEXT NOT NULL UNIQUE,
       \"password_hash\"	BLOB NOT NULL,
+      \"admin\" BOOL,
       PRIMARY KEY(\"id\" AUTOINCREMENT))")
   end
 
@@ -50,27 +60,23 @@ class User < DbModel
     super data
     @email = data['email']
     @name = data['name']
+    @admin = data['admin'] || false
     @password_hash = BCrypt::Password.new(data['password_hash'])
   end
 
   def self.create(name, email, password)
     hash = BCrypt::Password.create(password)
     session = db
-    return nil unless session.execute('SELECT * FROM Users WHERE email = ?', email).empty?
+    return nil unless session.execute("SELECT * FROM #{table_name} WHERE email = ?", email).empty?
 
-    session.execute('INSERT INTO Users (name, email, password_hash) VALUES (?, ?, ?)', name, email, hash)
+    session.execute("INSERT INTO #{table_name} (name, email, password_hash) VALUES (?, ?, ?)", name, email, hash)
     session.last_insert_row_id
-  end
-
-  def self.find_by_id(id)
-    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
-    data && User.new(data)
   end
 
   def self.find_by_email(email)
     return nil if email.empty?
 
-    data = db.execute('SELECT * FROM Users WHERE email = ?', email).first
+    data = db.execute("SELECT * FROM #{table_name} WHERE email = ?", email).first
     data && User.new(data)
   end
 
@@ -79,7 +85,7 @@ class User < DbModel
   end
 
   def ads
-    db.execute('SELECT * FROM Ads WHERE seller = ?', @id).map do |ad|
+    db.execute("SELECT * FROM #{Ad.table_name} WHERE seller = ?", @id).map do |ad|
       Ad.new(ad)
     end
   end
@@ -94,7 +100,7 @@ class Ad < DbModel
   end
 
   def self.create_table
-    db.execute("CREATE TABLE IF NOT EXISTS \"Ads\" (
+    db.execute("CREATE TABLE IF NOT EXISTS \"#{table_name}\" (
       \"id\"	INTEGER NOT NULL UNIQUE,
       \"price\"	INTEGER NOT NULL,
       \"title\"	TEXT NOT NULL,
@@ -102,7 +108,7 @@ class Ad < DbModel
       \"sold\"	INTEGER NOT NULL DEFAULT 0,
       \"seller\"	INTEGER NOT NULL,
       \"postal_code\" TEXT NOT NULL,
-      FOREIGN KEY(\"seller\") REFERENCES \"Users\"(\"id\"),
+      FOREIGN KEY(\"seller\") REFERENCES \"#{User.table_name}\"(\"id\"),
       PRIMARY KEY(\"id\" AUTOINCREMENT))")
   end
 
@@ -117,33 +123,28 @@ class Ad < DbModel
     @sold = data['sold']
   end
 
-  def self.find_by_id(id)
-    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
-    data && Ad.new(data)
-  end
-
   def self.create(title, content, price, seller_id, postal_code)
     session = db
-    session.execute('INSERT INTO Ads (title, content, price, seller, postal_code) VALUES (?, ?, ?, ?, ?)',
+    session.execute("INSERT INTO #{table_name} (title, content, price, seller, postal_code) VALUES (?, ?, ?, ?, ?)",
                     title, content, price, seller_id, postal_code)
     session.last_insert_row_id
   end
 
   def self.search(words)
-    query = words.empty? && 'SELECT * FROM Ads'
+    query = words.empty? && "SELECT * FROM #{table_name}"
     wildcards = words.map do
       'title LIKE ?'
     end
     words.map! do |word|
       "%#{word}%"
     end
-    db.execute(query || "SELECT * FROM Ads WHERE #{wildcards.join(' AND ')}", words).map do |data|
+    db.execute(query || "SELECT * FROM #{table_name} WHERE #{wildcards.join(' AND ')}", words).map do |data|
       Ad.new(data)
     end
   end
 
   def delete
-    db.execute('DELETE FROM Ads WHERE id = ?', @id)
+    db.execute("DELETE FROM #{table_name} WHERE id = ?", @id)
   end
 end
 
