@@ -3,10 +3,6 @@ h1.center Logga in
 form.real-form action="/login" method="post"
   - if session[:form_error]
     p.error = temp_session :form_error
-  - if session[:return_to]
-    p 
-      |Inloggning krävs för att komma åt 
-      code = session[:return_to]
   input.full-width type="email" placeholder="Email" name="email"/
   input.full-width type="password" placeholder="Lösenord" name="password"/
   input type="submit" value="Logga in"/

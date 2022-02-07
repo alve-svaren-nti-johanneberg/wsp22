@@ -123,6 +123,7 @@ main > .card {
 .full-width {
     display: block;
     width: 100%;
+    max-width: unset;
 }
 
 .panel {
@@ -141,7 +142,9 @@ main > .card {
 
 form.real-form,
 form.wide-form {
-    @include form-limit-width;
+    &:not(.full-width) {
+        @include form-limit-width;
+    }
 
     &.real-form {
         margin-top: 2rem;
@@ -154,8 +157,11 @@ form.wide-form {
 
     display: flex;
     flex-direction: column;
-    input {
+    input, .button {
         margin-bottom: 1rem;
+        &:last-child {
+            margin-bottom: unset;
+        }
     }
 }
 

@@ -1,0 +1,12 @@
+article.card
+  div.card-indent
+    h1
+      |Logga in eller skapa konto
+    p
+      |Inloggning krävs för att komma åt 
+      code = session[:return_to] || "denna sidan"
+    br
+    form.wide-form.full-width
+      a.button.full-width href="/login" Logga in
+      a.button.full-width.flat href="/register" Registrera konto
+      

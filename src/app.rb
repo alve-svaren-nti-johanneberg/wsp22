@@ -12,11 +12,17 @@ enable :sessions
 also_reload 'database.rb', 'utils.rb'
 
 auth_needed = %w[/ad/new]
-ignored_paths = %w[/style.css /favicon.ico]
+ignored_paths = %w[/style.css /favicon.ico /auth-needed]
+auth_paths = %w[/login /register /auth-needed]
 
-def access_denied
+def forbidden
   status 403
   slim :'403'
+end
+
+def unauthorized
+  status 401
+  slim :'401'
 end
 
 not_found do
@@ -29,15 +35,19 @@ before do
 
   if !current_user && auth_needed.map { |path| request.path_info.start_with?(path) }.any?
     session[:return_to] = request.fullpath
-    redirect '/login'
+    redirect '/auth-needed'
   end
   # If the user has gone and done something else than logging in or registering,
   # make sure to not return back after logging/registering in later
-  !(request.path_info == '/login' || request.path_info == '/register') && session.delete(:return_to)
+  (auth_paths.include? request.path_info) || session.delete(:return_to)
 end
 
 get '/' do
   slim :index
+end
+
+get '/auth-needed' do
+  unauthorized
 end
 
 # Generate and serve project sass
@@ -72,11 +82,9 @@ end
 
 get '/ad/:id' do
   ad = Ad.find_by_id(params[:id])
-  if ad
-    slim :'ad/view', locals: { ad: ad }
-  else
-    raise Sinatra::NotFound
-  end
+  raise Sinatra::NotFound unless ad
+
+  slim :'ad/view', locals: { ad: ad }
 end
 
 get '/ad/:id/edit' do
@@ -86,7 +94,7 @@ end
 post '/ad/:id/delete' do
   ad = Ad.find_by_id(params[:id])
   if ad
-    return access_denied unless ad.seller == current_user
+    return forbidden unless ad.seller == current_user
 
     ad.delete
     session[:msg] = 'Annonsen har raderats'

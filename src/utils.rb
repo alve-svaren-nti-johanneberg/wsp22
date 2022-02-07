@@ -17,6 +17,11 @@ def validate_email(email)
   (/\A[a-z0-9+-_.]+@[a-z\d\-.]+\.[a-z]+\z/i).match?(email)
 end
 
+def group_number(num, length = 3)
+  # 12345 => 12 345
+  num.to_s.chars.reverse.each_slice(length).reverse_each.map { |x| x.reverse.join }.join(' ')
+end
+
 def get_human_readable_price(price)
-  price.positive? ? "#{price} kr" : 'Gratis'
+  price.positive? ? "#{group_number(price, 3)} kr" : 'Gratis'
 end
