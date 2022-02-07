@@ -31,6 +31,6 @@ html lang="sv"
               a.button.login-icon-prefix href="/login"
                 | Logga in
 
-    - if session[:msg]
-      p.msg class=(temp_session(:success) ? "success" : "") = temp_session :msg
     main ==yield
+    - if session[:msg]
+      p.msg onclick="this.remove()" title="Klicka för att dölja" class=(temp_session(:success) ? "success" : "") = temp_session :msg

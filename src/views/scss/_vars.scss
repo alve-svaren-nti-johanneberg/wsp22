@@ -41,12 +41,13 @@ $card-width: 40rem;
 }
 
 @mixin opacity-animated($multiplier: 1) {
-    transition: opacity .2s;
+    transition-duration: 0.2s;
+    transition-property: opacity, background-color;
 
     &:hover {
-        opacity: .8 / $multiplier;
+        opacity: 0.8 / $multiplier;
     }
 }
 
-$light-shadow: 1px 1px .42rem rgba(#000, 0.2);
-$medium-shadow: 1px 1px .7rem rgba(#000, 0.2);
+$light-shadow: 1px 1px 0.42rem rgba(#000, 0.2);
+$medium-shadow: 1px 1px 0.7rem rgba(#000, 0.2);

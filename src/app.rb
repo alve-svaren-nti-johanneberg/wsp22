@@ -48,6 +48,7 @@ post '/ad/new' do
   error = 'Du måste ange ett postnummer' if params[:postal_code].empty?
   error = 'Du måste ange en beskrivning' if params[:content].empty?
   error = 'Du måste ange en titel' if params[:title].empty?
+  error = 'Titeln får inte vara längre än 256 tecken' if params[:title].length > 256
 
   if error
     session[:old_data] = params

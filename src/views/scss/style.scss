@@ -63,9 +63,23 @@ a {
 }
 
 .msg {
-    @include limit-width;
     @include center;
-    background-color: $bg-color;
+    position: fixed;
+    left: 1rem;
+    bottom: 1rem;
+    padding: .7rem 1.2rem;
+    border-radius: .5rem;
+    margin: 0;
+    background-color: #fff5;
+    cursor: pointer;
+    &::before {
+        content: "";
+        border-radius: inherit;
+        position: absolute;
+        inset: 0px;
+        background-color: currentColor;
+        opacity: .1;
+    }
 }
 
 h1 {
@@ -125,7 +139,8 @@ main > .card {
     margin-top: 1rem;
 }
 
-form.real-form, form.wide-form {
+form.real-form,
+form.wide-form {
     @include form-limit-width;
 
     &.real-form {
@@ -147,20 +162,23 @@ form.real-form, form.wide-form {
 input[type="text"],
 input[type="password"],
 input[type="email"],
-input[type="number"], textarea {
+input[type="number"],
+textarea {
     appearance: none;
     width: 100%;
     padding: 0.5rem 0.8rem;
     border: none;
     border-radius: 0.33rem;
     font-size: unset;
-    transition: box-shadow 0.5s;
     line-height: inherit;
+    &:not(.flat) {
+        transition: box-shadow 0.5s;
+    }
 
     &:focus,
     &:active {
         outline: none;
-        
+
         &:not(.flat) {
             box-shadow: $medium-shadow;
         }
@@ -174,6 +192,7 @@ input[type="number"], textarea {
 .flat {
     background-color: transparent;
     border: none;
+    transition: background-color 0.2s;
 
     &.button {
         background-color: #0002;
@@ -184,7 +203,8 @@ input[type="number"], textarea {
         background-color: #0001;
     }
 
-    &:focus, &:active {
+    &:focus,
+    &:active {
         background-color: #0002;
     }
 }
