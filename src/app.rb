@@ -65,6 +65,7 @@ post '/ad/new' do
   postal_code = params[:postal_code].delete(' ').delete('-').to_i
   error = 'Postnummret måste vara 5 siffror' unless postal_code.to_s.length == 5
   error = 'Priset måste vara positivt' if params[:price].to_i.negative?
+  error = 'Priset får inte vara mer än 1000 miljarder kr' if params[:price].to_i > 1e12
   error = 'Du måste ange ett postnummer' if params[:postal_code].empty?
   error = 'Du måste ange en beskrivning' if params[:content].empty?
   error = 'Du måste ange en titel' if params[:title].empty?
