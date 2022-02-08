@@ -1,5 +1,7 @@
 article.card
   section.ad-info
+    - if ad.image_name
+      img src="/userimg/#{ad.image_name}" alt="Bild på #{ad.title}"
     a.title href="/ad/#{ad.id}" = ad.title
     p.price.success = get_human_readable_price(ad.price)
 

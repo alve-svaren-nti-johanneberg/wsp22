@@ -295,6 +295,15 @@ form.wide-form {
     border-bottom: 2px solid $border-color;
     align-items: center;
     gap: 1rem;
+
+    img {
+        height: 2rem;
+        aspect-ratio: 2 / 1;
+        background-color: $bubble-color;
+        object-fit: cover;
+        border-radius: .3rem;
+
+    }
 }
 
 input[type="text"],
