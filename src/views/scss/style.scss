@@ -180,6 +180,16 @@ form.wide-form {
     }
 }
 
+.icon-wrapper {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    .icon {
+        height: 1em;
+        margin-right: .15em;
+    }
+}
+
 .message {
     $wing-size: 14px;
     &:not(.sent) {
