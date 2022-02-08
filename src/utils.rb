@@ -25,3 +25,16 @@ end
 def get_human_readable_price(price)
   price.positive? ? "#{group_number(price, 3)} kr" : 'Gratis'
 end
+
+def get_mime_from_filename(filename)
+  extension = filename.split('.').last
+
+  data = {
+    'png' => 'image/png',
+    'jpg' => 'image/jpeg',
+    'jpeg' => 'image/jpeg',
+    'gif' => 'image/gif',
+    'svg' => 'image/svg+xml'
+  }
+  data[extension]
+end

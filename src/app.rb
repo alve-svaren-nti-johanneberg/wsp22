@@ -83,8 +83,10 @@ post '/ad/new' do
   extension = filename.split('.').last
   new_name = "#{SecureRandom.uuid}.#{extension}"
 
-  File.open("userimgs/#{new_name}", 'wb') do |f|
-    f.write imagefile.read
+  File.open("userimgs/#{new_name}.gz", 'wb') do |f|
+    Zlib::GzipWriter.wrap(f) do |gz|
+      gz.write imagefile.read
+    end
   end
 
   ad = Ad.create(params[:title], params[:content], params[:price].to_i, current_user.id, postal_code, new_name)
@@ -99,7 +101,8 @@ get '/ad/:id' do
 end
 
 get '/userimg/:filename' do
-  send_file "userimgs/#{params[:filename]}"
+  headers 'Content-Encoding' => 'gzip'
+  send_file File.open("userimgs/#{params[:filename]}.gz"), filename: params[:filename], type: get_mime_from_filename(params[:filename])
 end
 
 get '/ad/:id/edit' do
