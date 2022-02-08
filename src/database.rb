@@ -236,6 +236,8 @@ class Message < DbModel
   end
 end
 
+Dir.mkdir('userimgs') unless Dir.exist?('userimgs')
+
 User.create_table
 Ad.create_table
 Message.create_table
