@@ -1,11 +1,11 @@
 article.card
-  div.card-indent
-    section.ad-info
+  section.ad-info
+    p.price.success = get_human_readable_price(ad.price)
       a.title href="/ad/#{ad.id}" = ad.title
-      p.price.success = get_human_readable_price(ad.price)
 
-      - if ad.seller == current_user
+    - if ad.seller == current_user
         p Du är säljare av denna annonsen
+  div.card-indent
 
     section.message-area
       p.center.muted.pre

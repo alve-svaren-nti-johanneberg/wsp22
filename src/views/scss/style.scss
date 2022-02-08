@@ -142,6 +142,7 @@ main > .card {
     max-width: 20rem;
     margin-bottom: 2.25rem;
     margin-top: 1rem;
+    flex-direction: column;
 }
 
 form.real-form,
@@ -258,6 +259,11 @@ form.wide-form {
             }
         }
     }
+}
+
+.ad-info {
+    background-color: $bg-color;
+    display: flex;
 }
 
 input[type="text"],
