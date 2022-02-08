@@ -35,7 +35,7 @@ end
 
 # A user
 class User < DbModel
-  attr_reader :email, :name
+  attr_reader :email, :name, :admin
 
   def self.table_name
     'Users'
@@ -88,6 +88,22 @@ class User < DbModel
     db.execute("SELECT * FROM #{Ad.table_name} WHERE seller = ?", @id).map do |ad|
       Ad.new(ad)
     end
+  end
+
+  def conversations
+    as_seller = []
+    as_customer = []
+    db.execute("SELECT * FROM #{Message.table_name} WHERE customer = ? OR ad IN (SELECT id FROM #{Ad.table_name} WHERE seller = ?)", @id, @id).map do |message|
+      message = Message.new(message)
+      unless as_seller.include?([message.ad.id, message.customer.id]) || as_customer.include?(message.ad.id)
+        if message.customer == self
+          as_customer << message.ad.id
+        else
+          as_seller << [message.ad.id, message.customer.id]
+        end
+      end
+    end
+    { seller: as_seller, customer: as_customer }
   end
 end
 
@@ -192,7 +208,7 @@ class Message < DbModel
     @content = data['content']
     @timestamp = Time.at(data['timestamp'])
     @customer = User.find_by_id(data['customer'])
-    @from_customer = !(data['is_from_customer'].zero?)
+    @from_customer = !data['is_from_customer'].zero?
     @sender = @from_customer ? @customer : @ad.seller
     @receiver = @from_customer ? @ad.seller : @customer
   end

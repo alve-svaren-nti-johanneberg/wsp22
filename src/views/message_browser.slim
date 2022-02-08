@@ -1,0 +1,16 @@
+ruby:
+  p current_user.conversations
+
+article.card
+  div.card-indent
+    h1 Meddelanden
+    h2 Konversationer som säljare
+    ul
+      - current_user.conversations[:seller].each do |conversation|
+        li.conversation
+          a href="/message/#{conversation[0]}/#{conversation[1]}" #{User.find_by_id(conversation[1]).name} angående #{Ad.find_by_id(conversation[0]).title}
+    h2 Konversationer som köpare
+    ul
+      - current_user.conversations[:customer].each do |conversation|
+        li.conversation
+            a href="/message/#{conversation[0]}" #{Ad.find_by_id(conversation[0]).title}

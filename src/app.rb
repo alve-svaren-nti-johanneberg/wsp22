@@ -165,8 +165,8 @@ get '/message/:id/:customer' do
   slim :messages, locals: { to: customer, ad: ad, messages: Message.conversation(customer, ad) }
 end
 
-get '/message' do
-  
+get '/messages' do
+  slim :message_browser
 end
 
 post '/register' do

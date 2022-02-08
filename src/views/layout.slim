@@ -19,6 +19,8 @@ html lang="sv"
         ul
           - if current_user
             li
+              a href="/messages" Meddelanden
+            li
               | Inloggad som 
               a.normal href="/user/#{current_user.id}" = current_user.name
             li
