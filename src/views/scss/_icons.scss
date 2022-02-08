@@ -8,6 +8,10 @@
 
 .create-ad-icon-prefix::before {
     @extend .fa;
-
     content: "#{$fa-var-plus} ";
+}
+
+.message-icon-prefix::before {
+    @extend .fa;
+    content: "#{$fa-var-comment} ";
 }

@@ -11,7 +11,7 @@ enable :sessions
 
 also_reload 'database.rb', 'utils.rb'
 
-auth_needed = %w[/ad/new]
+auth_needed = %w[/ad/new /message]
 ignored_paths = %w[/style.css /favicon.ico /auth-needed]
 auth_paths = %w[/login /register /auth-needed]
 
@@ -131,6 +131,44 @@ get '/user/:id' do
   slim :profile, locals: { user: user }
 end
 
+get '/message/:id' do
+  ad = Ad.find_by_id(params[:id])
+  raise Sinatra::NotFound unless ad
+
+  slim :messages, locals: { to: ad.seller, ad: ad, messages: Message.conversation(current_user, ad) }
+end
+
+post '/message/:id' do
+  ad = Ad.find_by_id(params[:id])
+  raise Sinatra::NotFound unless ad
+
+  Message.create(ad, current_user, ad.seller, params[:content])
+  redirect "/message/#{ad.id}"
+end
+
+post '/message/:id/:customer' do
+  customer = User.find_by_id(params[:customer])
+  ad = Ad.find_by_id(params[:id])
+  raise Sinatra::NotFound unless ad
+  raise Sinatra::NotFound unless customer
+
+  Message.create(ad, current_user, customer, params[:content])
+  redirect "/message/#{ad.id}/#{customer.id}"
+end
+
+get '/message/:id/:customer' do
+  customer = User.find_by_id(params[:customer])
+  ad = Ad.find_by_id(params[:id])
+  raise Sinatra::NotFound unless ad
+  raise Sinatra::NotFound unless customer
+
+  slim :messages, locals: { to: customer, ad: ad, messages: Message.conversation(customer, ad) }
+end
+
+get '/message' do
+  
+end
+
 post '/register' do
   error = nil
 
@@ -139,7 +177,7 @@ post '/register' do
   error = 'Du måste ange ett namn' if params[:name].empty?
   error = 'Du måste ange en giltig e-postadress' unless validate_email(params[:email])
   error = 'Ditt namn måste vara kortare än 16 tecken' if params[:name].length > 16
-  unless params[:name].match?(/^[a-zA-Z\-_]+$/)
+  unless params[:name].match?(/^[äÄöÖåÅa-zA-Z\-_]+$/)
     error = 'Ditt namn måste bestå av endast bokstäver, bindestreck och understreck'
   end
 

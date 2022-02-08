@@ -31,11 +31,6 @@ class DbModel
 
     @id == other.id
   end
-
-  def self.find_by_id(id)
-    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
-    data && self.class.new(data)
-  end
 end
 
 # A user
@@ -48,9 +43,9 @@ class User < DbModel
 
   def self.create_table
     db.execute("CREATE TABLE IF NOT EXISTS \"#{table_name}\" (
-      \"id\"	INTEGER NOT NULL UNIQUE,
-      \"name\"	TEXT NOT NULL,
-      \"email\"	TEXT NOT NULL UNIQUE,
+      \"id\" INTEGER NOT NULL UNIQUE,
+      \"name\" TEXT NOT NULL,
+      \"email\" TEXT NOT NULL UNIQUE,
       \"password_hash\"	BLOB NOT NULL,
       \"admin\" BOOL,
       PRIMARY KEY(\"id\" AUTOINCREMENT))")
@@ -84,6 +79,11 @@ class User < DbModel
     @password_hash == password
   end
 
+  def self.find_by_id(id)
+    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
+    data && User.new(data)
+  end
+
   def ads
     db.execute("SELECT * FROM #{Ad.table_name} WHERE seller = ?", @id).map do |ad|
       Ad.new(ad)
@@ -101,12 +101,12 @@ class Ad < DbModel
 
   def self.create_table
     db.execute("CREATE TABLE IF NOT EXISTS \"#{table_name}\" (
-      \"id\"	INTEGER NOT NULL UNIQUE,
-      \"price\"	INTEGER NOT NULL,
-      \"title\"	TEXT NOT NULL,
-      \"content\"	TEXT NOT NULL,
-      \"sold\"	INTEGER NOT NULL DEFAULT 0,
-      \"seller\"	INTEGER NOT NULL,
+      \"id\" INTEGER NOT NULL UNIQUE,
+      \"price\" INTEGER NOT NULL,
+      \"title\" TEXT NOT NULL,
+      \"content\" TEXT NOT NULL,
+      \"sold\" INTEGER NOT NULL DEFAULT 0,
+      \"seller\" INTEGER NOT NULL,
       \"postal_code\" TEXT NOT NULL,
       FOREIGN KEY(\"seller\") REFERENCES \"#{User.table_name}\"(\"id\"),
       PRIMARY KEY(\"id\" AUTOINCREMENT))")
@@ -122,6 +122,11 @@ class Ad < DbModel
     @sold = data['sold']
   end
 
+  # @param title [String]
+  # @param content [String]
+  # @param price [Integer]
+  # @param seller_id [Integer]
+  # @param postal_code [String, Integer]
   def self.create(title, content, price, seller_id, postal_code)
     session = db
     session.execute("INSERT INTO #{table_name} (title, content, price, seller, postal_code) VALUES (?, ?, ?, ?, ?)",
@@ -142,10 +147,76 @@ class Ad < DbModel
     end
   end
 
+  def self.find_by_id(id)
+    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
+    data && Ad.new(data)
+  end
+
   def delete
     db.execute("DELETE FROM #{table_name} WHERE id = ?", @id)
   end
 end
 
+# A message that someone sent
+class Message < DbModel
+  attr_reader :content, :ad, :customer, :sender, :receiver, :timestamp
+
+  def self.table_name
+    'Messages'
+  end
+
+  def self.create_table
+    db.execute("CREATE TABLE IF NOT EXISTS \"#{table_name}\" (
+      \"id\" INTEGER NOT NULL UNIQUE,
+      \"content\" TEXT NOT NULL,
+      \"ad\" INTEGER NOT NULL,
+      \"customer\" INTEGER NOT NULL,
+      \"is_from_customer\" INTEGER NOT NULL,
+      \"timestamp\" INTEGER NOT NULL,
+      FOREIGN KEY(\"customer\") REFERENCES \"#{User.table_name}\"(\"id\"),
+      FOREIGN KEY(\"ad\") REFERENCES \"#{Ad.table_name}\"(\"id\"),
+      PRIMARY KEY(\"id\" AUTOINCREMENT))")
+  end
+
+  # @param user [User]
+  # @param ad [Ad]
+  def self.conversation(user, ad)
+    db.execute("SELECT * FROM #{table_name} WHERE customer = ? AND ad = ?", user.id, ad.id).map do |data|
+      Message.new(data)
+    end
+  end
+
+  def initialize(data)
+    super data
+    @ad = Ad.find_by_id(data['ad'])
+    @content = data['content']
+    @timestamp = Time.at(data['timestamp'])
+    @customer = User.find_by_id(data['customer'])
+    @from_customer = !(data['is_from_customer'].zero?)
+    @sender = @from_customer ? @customer : @ad.seller
+    @receiver = @from_customer ? @ad.seller : @customer
+  end
+
+  def self.find_by_id(id)
+    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
+    data && Message.new(data)
+  end
+
+  # @param ad [Ad]
+  # @param sender [User]
+  # @param receiver [User]
+  # @param content [String]
+  def self.create(ad, sender, receiver, content)
+    from_customer = sender != ad.seller
+    session = db
+    session.execute(
+      "INSERT INTO #{table_name} (ad, customer, is_from_customer, content, timestamp) VALUES (?, ?, ?, ?, ?)",
+      ad.id, (from_customer ? sender : receiver).id, from_customer ? 1 : 0, content, Time.now.to_i
+    )
+    session.last_insert_row_id
+  end
+end
+
 User.create_table
 Ad.create_table
+Message.create_table
