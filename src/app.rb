@@ -177,7 +177,7 @@ post '/register' do
   error = 'Du måste ange ett namn' if params[:name].empty?
   error = 'Du måste ange en giltig e-postadress' unless validate_email(params[:email])
   error = 'Ditt namn måste vara kortare än 16 tecken' if params[:name].length > 16
-  unless params[:name].match?(/^[äÄöÖåÅa-zA-Z\-_]+$/)
+  unless params[:name].match?(/^[äÄöÖåÅa-zA-Z\-_0-9]+$/)
     error = 'Ditt namn måste bestå av endast bokstäver, bindestreck och understreck'
   end
 
