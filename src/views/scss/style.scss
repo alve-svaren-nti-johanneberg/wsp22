@@ -109,6 +109,17 @@ main > .card {
 .card {
     h1 {
         font-size: 2rem;
+        margin: 0;
+    }
+
+    .card-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: .8rem;
+        .price {
+            font-size: 1.33rem;
+        }
     }
 
     background-color: $bg-color-darker;
@@ -117,6 +128,9 @@ main > .card {
 
     .card-indent {
         margin: 2rem;
+        &:not(:first-child) {
+            margin-top: 0;
+        }
     }
 }
 
@@ -203,6 +217,12 @@ form.wide-form {
 
 #new-message {
     padding-right: 2.5rem;
+}
+
+.card-image {
+    max-height: 20rem;
+    object-fit: cover;
+    width: 100%;
 }
 
 .message {

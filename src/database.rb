@@ -109,7 +109,7 @@ end
 
 # An ad that a user created
 class Ad < DbModel
-  attr_reader :price, :seller, :title, :content, :sold, :postal_code
+  attr_reader :price, :seller, :title, :content, :sold, :postal_code, :image_name
 
   def self.table_name
     'Ads'
@@ -124,6 +124,7 @@ class Ad < DbModel
       \"sold\" INTEGER NOT NULL DEFAULT 0,
       \"seller\" INTEGER NOT NULL,
       \"postal_code\" TEXT NOT NULL,
+      \"image_name\" TEXT,
       FOREIGN KEY(\"seller\") REFERENCES \"#{User.table_name}\"(\"id\"),
       PRIMARY KEY(\"id\" AUTOINCREMENT))")
   end
@@ -136,6 +137,7 @@ class Ad < DbModel
     @postal_code = data['postal_code']
     @content = data['content']
     @sold = data['sold']
+    @image_name = data['image_name']
   end
 
   # @param title [String]
@@ -143,10 +145,10 @@ class Ad < DbModel
   # @param price [Integer]
   # @param seller_id [Integer]
   # @param postal_code [String, Integer]
-  def self.create(title, content, price, seller_id, postal_code)
+  def self.create(title, content, price, seller_id, postal_code, image_name)
     session = db
-    session.execute("INSERT INTO #{table_name} (title, content, price, seller, postal_code) VALUES (?, ?, ?, ?, ?)",
-                    title, content, price, seller_id, postal_code)
+    session.execute("INSERT INTO #{table_name} (title, content, price, seller, postal_code, image_name) VALUES (?, ?, ?, ?, ?, ?)",
+                    title, content, price, seller_id, postal_code, image_name)
     session.last_insert_row_id
   end
 
@@ -170,6 +172,7 @@ class Ad < DbModel
 
   def delete
     db.execute("DELETE FROM #{table_name} WHERE id = ?", @id)
+    File.delete("userimgs/#{@image_name}") if @image_name
   end
 end
 

@@ -1,10 +1,11 @@
 article.card
-  / img src="/userimg/#{ad.image_id}" alt="Bild på #{ad.title}"
+  - if ad.image_name
+    img.card-image src="/userimg/#{ad.image_name}" alt="Bild på #{ad.title}"
   div.card-indent
     header
-      div
+      div.card-title
         h1 = ad.title
-        h2 = get_human_readable_price(ad.price)
+        span.price = get_human_readable_price(ad.price)
       p.seller-info
         | säljs av 
         a href="/user/#{ad.seller.id}" = ad.seller.name

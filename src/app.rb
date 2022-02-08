@@ -4,6 +4,7 @@ require 'sinatra'
 require 'sinatra/reloader'
 require 'slim'
 require 'sassc'
+require 'securerandom'
 require_relative 'database'
 require_relative 'utils'
 
@@ -77,7 +78,16 @@ post '/ad/new' do
     return redirect '/ad/new'
   end
 
-  ad = Ad.create(params[:title], params[:content], params[:price].to_i, current_user.id, postal_code)
+  imagefile = params[:cover][:tempfile]
+  filename = params[:cover][:filename]
+  extension = filename.split('.').last
+  new_name = "#{SecureRandom.uuid}.#{extension}"
+
+  File.open("userimgs/#{new_name}", 'wb') do |f|
+    f.write imagefile.read
+  end
+
+  ad = Ad.create(params[:title], params[:content], params[:price].to_i, current_user.id, postal_code, new_name)
   redirect "/ad/#{ad}"
 end
 
@@ -86,6 +96,10 @@ get '/ad/:id' do
   raise Sinatra::NotFound unless ad
 
   slim :'ad/view', locals: { ad: ad }
+end
+
+get '/userimg/:filename' do
+  send_file "userimgs/#{params[:filename]}"
 end
 
 get '/ad/:id/edit' do

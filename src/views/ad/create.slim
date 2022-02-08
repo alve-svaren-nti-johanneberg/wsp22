@@ -1,8 +1,9 @@
 article.card
-  form action="/ad/new" method="post"
+  form action="/ad/new" method="post" enctype="multipart/form-data"
     / img src="/userimg/#{ad.image_id}" alt="Bild på #{ad.title}"
     div.card-indent
       p.error = temp_session :form_error
+      input type="file" name="cover" accept="image/*"
       header
         div
           input.flat type="text" maxlength="64" placeholder="Ange titel" name="title"
