@@ -1,13 +1,16 @@
 article.card
   div.card-indent
     section.ad-info
-      p.title = ad.title
+      a.title href="/ad/#{ad.id}" = ad.title
       p.price.success = get_human_readable_price(ad.price)
 
       - if ad.seller == current_user
         p Du är säljare av denna annonsen
 
     section.message-area
+      p.center.muted.pre
+        |Detta är början av din konversation med 
+        a href="/user/#{(ad.seller == current_user ? to : ad.seller).id}" = (ad.seller == current_user ? to : ad.seller).name
       - messages.each do |message|
         div.message class=(message.sender == current_user ? "sent" : "")
           p.time = message.timestamp.strftime("%H:%M")

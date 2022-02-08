@@ -54,6 +54,10 @@ a {
     }
 }
 
+.pre {
+    white-space: pre-wrap;
+}
+
 .error {
     color: $red;
 }
@@ -142,6 +146,9 @@ main > .card {
 
 form.real-form,
 form.wide-form {
+    display: flex;
+    flex-direction: column;
+
     &:not(.full-width) {
         @include form-limit-width;
     }
@@ -155,8 +162,6 @@ form.wide-form {
         }
     }
 
-    display: flex;
-    flex-direction: column;
     input,
     .button {
         margin-bottom: 1rem;
@@ -186,35 +191,24 @@ form.wide-form {
     flex-direction: row;
     .icon {
         height: 1em;
-        margin-right: .15em;
+        margin-right: 0.15em;
     }
 }
 
-.message {
-    $wing-size: 14px;
-    &:not(.sent) {
-        flex-direction: row-reverse;
-        justify-content: start;
-        .text {
-            margin-right: 0.5rem;
+.muted {
+    opacity: 0.5;
+}
 
-            background-color: $bubble-color;
-            color: $text-color;
-            border-radius: 0.66rem 0.66rem 0.66rem 0;
-            margin-left: $wing-size;
-            &::before {
-                content: url("data:image/svg+xml,%3Csvg%20width%3D%2224px%22%20height%3D%2224px%22%20viewBox%3D%220%200%200.633%200.842%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M.633%200v.842L.146.84A.152.152%200%200%201%20.04.585L.633%200z%22%20fill%3D%22%23ddd%22%2F%3E%3C%2Fsvg%3E");
-                position: absolute;
-                left: -$wing-size;
-                bottom: 0;
-            }
-        }
-    }
+.message {
+    $wing-size: 10px;
     display: flex;
     align-items: center;
+    margin-bottom: 0.5rem;
+
     .time {
         font-size: 0.8rem;
         opacity: 0.5;
+        user-select: none;
     }
 
     .text {
@@ -222,8 +216,13 @@ form.wide-form {
         padding: 0.5rem 0.75rem;
         display: inline;
         margin: 0;
-        margin-bottom: .5rem;
         min-height: 28px;
+        border-radius: 0.66rem;
+
+        &::before {
+            bottom: 0;
+            position: absolute;
+        }
     }
 
     &.sent {
@@ -233,17 +232,29 @@ form.wide-form {
             margin-left: 0.5rem;
             background-color: $accent-color;
             color: $accent-text-color;
-            border-radius: 0.66rem 0.66rem 0 0.66rem;
-            position: relative;
-            padding: 0.5rem 0.75rem;
+            border-bottom-right-radius: 0;
             margin-right: $wing-size;
-            display: inline;
 
             &::before {
                 content: url("data:image/svg+xml,%3Csvg%20width%3D%2224px%22%20height%3D%2224px%22%20viewBox%3D%220%200%200.633%200.842%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200v.842L.487.84A.152.152%200%200%200%20.592.585L0%200z%22%20fill%3D%22%23546fce%22%2F%3E%3C%2Fsvg%3E");
-                position: absolute;
                 right: -$wing-size;
-                bottom: 0;
+            }
+        }
+    }
+
+    &:not(.sent) {
+        flex-direction: row-reverse;
+        justify-content: start;
+
+        .text {
+            margin-right: 0.5rem;
+            background-color: $bubble-color;
+            color: $text-color;
+            border-bottom-left-radius: 0;
+            margin-left: $wing-size;
+            &::before {
+                content: url("data:image/svg+xml,%3Csvg%20width%3D%2224px%22%20height%3D%2224px%22%20viewBox%3D%220%200%200.633%200.842%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M.633%200v.842L.146.84A.152.152%200%200%201%20.04.585L.633%200z%22%20fill%3D%22%23ddd%22%2F%3E%3C%2Fsvg%3E");
+                left: -$wing-size;
             }
         }
     }
@@ -261,6 +272,7 @@ textarea {
     border-radius: 0.33rem;
     font-size: unset;
     line-height: inherit;
+
     &:not(.flat) {
         transition: box-shadow 0.5s;
     }
