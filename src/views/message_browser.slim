@@ -1,6 +1,3 @@
-ruby:
-  p current_user.conversations
-
 article.card
   div.card-indent
     h1 Meddelanden
@@ -13,4 +10,4 @@ article.card
     ul
       - current_user.conversations[:customer].each do |conversation|
         li.conversation
-            a href="/message/#{conversation[0]}" #{Ad.find_by_id(conversation[0]).title}
+            a href="/message/#{conversation}" #{Ad.find_by_id(conversation).title}
