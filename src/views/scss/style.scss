@@ -18,11 +18,11 @@ body {
 }
 
 a {
-    color: $accent-light-text-color;
+    color: var(--accent-light-text-color);
 }
 
 #navbar {
-    border-bottom: 2px solid $border-color;
+    border-bottom: 2px solid var(--border-color);
 
     > div {
         @include limit-width;
@@ -35,7 +35,7 @@ a {
         a:not(.button):not(.normal) {
             @include opacity-animated(1.25);
             text-decoration: none;
-            color: $text-color;
+            color: var(--text-color);
         }
 
         > ul {
@@ -59,11 +59,11 @@ a {
 }
 
 .error {
-    color: $red;
+    color: var(--red);
 }
 
 .success {
-    color: $green;
+    color: var(--green);
 }
 
 .msg {
@@ -95,10 +95,11 @@ h1 {
     font-family: "Roboto", sans-serif;
     font-size: 18px;
     line-height: 1.6;
+    color: var(--text-color);
 }
 
 body {
-    background-color: $bg-color;
+    background-color: var(--bg-color);
 }
 
 main > .card {
@@ -116,13 +117,13 @@ main > .card {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        margin-top: .8rem;
+        margin-top: 0.8rem;
         .price {
             font-size: 1.33rem;
         }
     }
 
-    background-color: $bg-color-darker;
+    background-color: var(--bg-color-darker);
     overflow: hidden;
     border-radius: 1rem;
 
@@ -147,7 +148,7 @@ main > .card {
 .panel {
     @include center;
     padding: 0 1rem;
-    background-color: $bg-color-dark;
+    background-color: var(--bg-color-dark);
 }
 
 .ad-panel-container {
@@ -193,7 +194,8 @@ form.wide-form {
         position: absolute;
         right: 0;
         background-color: transparent;
-        color: #000a;
+        color: var(--text-color);
+        opacity: 0.7;
         top: 0;
         bottom: 0;
         padding-right: 0.8rem;
@@ -214,7 +216,6 @@ form.wide-form {
     opacity: 0.5;
 }
 
-
 #new-message {
     padding-right: 2.5rem;
 }
@@ -229,7 +230,7 @@ form.wide-form {
     $wing-size: 10px;
     display: flex;
     align-items: center;
-    margin-bottom: .5rem;
+    margin-bottom: 0.5rem;
 
     .time {
         font-size: 0.8rem;
@@ -258,13 +259,15 @@ form.wide-form {
 
         .text {
             margin-left: 0.5rem;
-            background-color: $accent-color;
-            color: $accent-text-color;
+            background-color: var(--accent-color);
+            color: var(--accent-text-color);
             border-bottom-right-radius: 0;
             margin-right: $wing-size;
 
             &::before {
-                content: url("data:image/svg+xml,%3Csvg%20width%3D%2224px%22%20height%3D%2224px%22%20viewBox%3D%220%200%200.633%200.842%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M0%200v.842L.487.84A.152.152%200%200%200%20.592.585L0%200z%22%20fill%3D%22%23546fce%22%2F%3E%3C%2Fsvg%3E");
+                $before: "%3Csvg width='24px' height='24px' viewBox='0 0 0.633 0.842' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0v.842L.487.84A.152.152 0 0 0 .592.585L0 0z' fill='";
+                $after: "'/%3E%3C/svg%3E";
+                content: url("data:image/svg+xml,#{$before}#{str-replace($accent-color, '#', '%23')}#{$after}");
                 right: -$wing-size;
             }
         }
@@ -276,12 +279,17 @@ form.wide-form {
 
         .text {
             margin-right: 0.5rem;
-            background-color: $bubble-color;
-            color: $text-color;
+            background-color: var(--bubble-color);
+            color: var(--text-color);
             border-bottom-left-radius: 0;
             margin-left: $wing-size;
+            $before: "%3Csvg width='24px' height='24px' viewBox='0 0 0.633 0.842' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M.633 0v.842L.146.84A.152.152 0 0 1 .04.585L.633 0z' fill='";
+            $after: "'/%3E%3C/svg%3E";
             &::before {
-                content: url("data:image/svg+xml,%3Csvg%20width%3D%2224px%22%20height%3D%2224px%22%20viewBox%3D%220%200%200.633%200.842%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cpath%20d%3D%22M.633%200v.842L.146.84A.152.152%200%200%201%20.04.585L.633%200z%22%20fill%3D%22%23ddd%22%2F%3E%3C%2Fsvg%3E");
+                content: url("data:image/svg+xml,#{$before}#{str-replace($bubble-color, '#', '%23')}#{$after}");
+                @media (prefers-color-scheme: dark) {
+                    content: url("data:image/svg+xml,#{$before}#{str-replace($dark-bubble-color, '#', '%23')}#{$after}");
+                }
                 left: -$wing-size;
             }
         }
@@ -289,20 +297,19 @@ form.wide-form {
 }
 
 .ad-info {
-    background-color: $bg-color;
+    background-color: var(--bg-color);
     display: flex;
     padding: 0 1rem;
-    border-bottom: 2px solid $border-color;
+    border-bottom: 2px solid var(--border-color);
     align-items: center;
     gap: 1rem;
 
     img {
         height: 2rem;
         aspect-ratio: 2 / 1;
-        background-color: $bubble-color;
+        background-color: var(--bubble-color);
         object-fit: cover;
-        border-radius: .3rem;
-
+        border-radius: 0.3rem;
     }
 }
 
@@ -318,6 +325,8 @@ textarea {
     border-radius: 0.33rem;
     font-size: unset;
     line-height: inherit;
+    background-color: var(--bg-color);
+    color: inherit;
 
     &:not(.flat) {
         transition: box-shadow 0.5s;
@@ -344,7 +353,7 @@ textarea {
 
     &.button {
         background-color: #0002;
-        color: black;
+        color: var(--text-color);
     }
 
     &:hover {
@@ -376,8 +385,8 @@ button,
 input[type="submit"] {
     @include opacity-animated;
     text-decoration: none;
-    color: $accent-text-color;
-    background-color: $accent-color;
+    color: var(--accent-text-color);
+
     padding: 0.5rem 0.8rem;
     border-radius: 0.33rem;
     text-align: center;
@@ -386,7 +395,11 @@ input[type="submit"] {
     cursor: pointer;
     line-height: inherit;
 
+    &:not(.flat) {
+        background-color: var(--accent-color);
+    }
+
     &.destructive {
-        background-color: $red;
+        background-color: var(--red);
     }
 }

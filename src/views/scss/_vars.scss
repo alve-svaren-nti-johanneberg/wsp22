@@ -1,15 +1,32 @@
 // Colors:
-$bg-color: white;
-$bg-color-dark: #fafafa;
-$bg-color-darker: #f4f4f4;
-$text-color: black;
-$accent-text-color: invert($text-color);
-$accent-color: #546fce;
-$accent-light-text-color: $accent-color;
-$border-color: #e5e5e5;
-$red: #ff5252;
-$green: #4caf50;
-$bubble-color: #dddddd;
+$bubble-color: "#ddd";
+$dark-bubble-color: "#262a32";
+$accent-color: "#546fce";
+:root {
+    --bg-color: white;
+    --bg-color-dark: #fafafa;
+    --bg-color-darker: #f4f4f4;
+    --text-color: black;
+    --accent-text-color: white;
+    --accent-color: #{$accent-color};
+    --accent-light-text-color: #{$accent-color};
+    --border-color: #e5e5e5;
+    --red: #ff5252;
+    --green: #4caf50;
+    --bubble-color: #{$bubble-color};
+
+    // Dark mode styles
+    @media (prefers-color-scheme: dark) {
+        --bg-color: #2f343e;
+        --bg-color-dark: #262a32;
+        --bg-color-darker: #1c1f26;
+        --text-color: white;
+        --border-color: var(--bg-color-dark);
+        --red: #ff5252;
+        --green: #4caf50;
+        --bubble-color: #{$dark-bubble-color};
+    }
+}
 
 // Sizes:
 $page-width: 72rem;
@@ -47,6 +64,16 @@ $card-width: 40rem;
     &:hover {
         opacity: 0.8 / $multiplier;
     }
+}
+
+@function str-replace($string, $search, $replace: "") {
+    $index: str-index($string, $search);
+
+    @if $index {
+        @return str-slice($string, 1, $index - 1) + $replace + str-replace(str-slice($string, $index + str-length($search)), $search, $replace);
+    }
+
+    @return $string;
 }
 
 $light-shadow: 1px 1px 0.42rem rgba(#000, 0.2);
