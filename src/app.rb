@@ -78,13 +78,17 @@ post '/ad/new' do
     return redirect '/ad/new'
   end
 
-  imagefile = params[:cover][:tempfile]
-  filename = params[:cover][:filename]
-  extension = filename.split('.').last
-  new_name = "#{SecureRandom.uuid}.#{extension}"
+  new_name = nil
 
-  File.open("userimgs/#{new_name}", 'wb') do |f|
-    f.write imagefile.read
+  if params[:cover]
+    imagefile = params[:cover][:tempfile]
+    filename = params[:cover][:filename]
+    extension = filename.split('.').last
+    new_name = "#{SecureRandom.uuid}.#{extension}"
+
+    File.open("userimgs/#{new_name}", 'wb') do |f|
+      f.write imagefile.read
+    end
   end
 
   ad = Ad.create(params[:title], params[:content], params[:price].to_i, current_user.id, postal_code, new_name)
