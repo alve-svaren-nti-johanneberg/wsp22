@@ -193,7 +193,7 @@ form.wide-form {
     input[type="submit"] {
         position: absolute;
         right: 0;
-        background-color: transparent;
+        background-color: transparent !important;
         color: var(--text-color);
         opacity: 0.7;
         top: 0;
@@ -254,6 +254,8 @@ form.wide-form {
         }
     }
 
+    $after: "'/%3E%3C/svg%3E";
+
     &.sent {
         justify-content: end;
 
@@ -266,7 +268,6 @@ form.wide-form {
 
             &::before {
                 $before: "%3Csvg width='24px' height='24px' viewBox='0 0 0.633 0.842' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0v.842L.487.84A.152.152 0 0 0 .592.585L0 0z' fill='";
-                $after: "'/%3E%3C/svg%3E";
                 content: url("data:image/svg+xml,#{$before}#{str-replace($accent-color, '#', '%23')}#{$after}");
                 right: -$wing-size;
             }
@@ -284,7 +285,6 @@ form.wide-form {
             border-bottom-left-radius: 0;
             margin-left: $wing-size;
             $before: "%3Csvg width='24px' height='24px' viewBox='0 0 0.633 0.842' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M.633 0v.842L.146.84A.152.152 0 0 1 .04.585L.633 0z' fill='";
-            $after: "'/%3E%3C/svg%3E";
             &::before {
                 content: url("data:image/svg+xml,#{$before}#{str-replace($bubble-color, '#', '%23')}#{$after}");
                 @media (prefers-color-scheme: dark) {
