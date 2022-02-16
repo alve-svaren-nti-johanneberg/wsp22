@@ -90,8 +90,7 @@ post '/ad/new' do
     File.open("userimgs/#{new_name}", 'wb') do |f|
       image = Magick::Image.from_blob(imagefile.read).first
       image.format = 'jpeg'
-      image.quality = 70
-      image.resize_to_fit(720 * 4, 320 * 4).write(f)
+      image.resize_to_fit(720 * 4, 320 * 4).write(f) { self.quality = 70 }
     end
   end
 
