@@ -5,6 +5,7 @@ require 'sinatra/reloader'
 require 'slim'
 require 'sassc'
 require 'securerandom'
+require 'rmagick'
 require_relative 'database'
 require_relative 'utils'
 
@@ -82,12 +83,14 @@ post '/ad/new' do
 
   if params[:cover]
     imagefile = params[:cover][:tempfile]
-    filename = params[:cover][:filename]
-    extension = filename.split('.').last
-    new_name = "#{SecureRandom.uuid}.#{extension}"
+    # filename = params[:cover][:filename]
+    # extension = filename.split('.').last
+    new_name = "#{SecureRandom.uuid}.png"
 
     File.open("userimgs/#{new_name}", 'wb') do |f|
-      f.write imagefile.read
+      image = Magick::Image.from_blob(imagefile.read).first
+      image.format = "png"
+      image.resize_to_fit(720 * 4, 320 * 4).write(f)
     end
   end
 

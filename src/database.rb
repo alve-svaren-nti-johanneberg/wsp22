@@ -42,13 +42,13 @@ class User < DbModel
   end
 
   def self.create_table
-    db.execute("CREATE TABLE IF NOT EXISTS \"#{table_name}\" (
-      \"id\" INTEGER NOT NULL UNIQUE,
-      \"name\" TEXT NOT NULL,
-      \"email\" TEXT NOT NULL UNIQUE,
-      \"password_hash\"	BLOB NOT NULL,
-      \"admin\" BOOL,
-      PRIMARY KEY(\"id\" AUTOINCREMENT))")
+    db.execute("CREATE TABLE IF NOT EXISTS `#{table_name}` (
+      `id` INTEGER NOT NULL UNIQUE,
+      `name` TEXT NOT NULL,
+      `email` TEXT NOT NULL UNIQUE,
+      `password_hash`	BLOB NOT NULL,
+      `admin` BOOL,
+      PRIMARY KEY(`id` AUTOINCREMENT))")
   end
 
   def initialize(data)
@@ -116,17 +116,17 @@ class Ad < DbModel
   end
 
   def self.create_table
-    db.execute("CREATE TABLE IF NOT EXISTS \"#{table_name}\" (
-      \"id\" INTEGER NOT NULL UNIQUE,
-      \"price\" INTEGER NOT NULL,
-      \"title\" TEXT NOT NULL,
-      \"content\" TEXT NOT NULL,
-      \"sold\" INTEGER NOT NULL DEFAULT 0,
-      \"seller\" INTEGER NOT NULL,
-      \"postal_code\" TEXT NOT NULL,
-      \"image_name\" TEXT,
-      FOREIGN KEY(\"seller\") REFERENCES \"#{User.table_name}\"(\"id\"),
-      PRIMARY KEY(\"id\" AUTOINCREMENT))")
+    db.execute("CREATE TABLE IF NOT EXISTS `#{table_name}` (
+      `id` INTEGER NOT NULL UNIQUE,
+      `price` INTEGER NOT NULL,
+      `title` TEXT NOT NULL,
+      `content` TEXT NOT NULL,
+      `sold` INTEGER NOT NULL DEFAULT 0,
+      `seller` INTEGER NOT NULL,
+      `postal_code` TEXT NOT NULL,
+      `image_name` TEXT,
+      FOREIGN KEY(`seller`) REFERENCES `#{User.table_name}`(`id`),
+      PRIMARY KEY(`id` AUTOINCREMENT))")
   end
 
   def initialize(data)
@@ -185,16 +185,16 @@ class Message < DbModel
   end
 
   def self.create_table
-    db.execute("CREATE TABLE IF NOT EXISTS \"#{table_name}\" (
-      \"id\" INTEGER NOT NULL UNIQUE,
-      \"content\" TEXT NOT NULL,
-      \"ad\" INTEGER NOT NULL,
-      \"customer\" INTEGER NOT NULL,
-      \"is_from_customer\" INTEGER NOT NULL,
-      \"timestamp\" INTEGER NOT NULL,
-      FOREIGN KEY(\"customer\") REFERENCES \"#{User.table_name}\"(\"id\"),
-      FOREIGN KEY(\"ad\") REFERENCES \"#{Ad.table_name}\"(\"id\"),
-      PRIMARY KEY(\"id\" AUTOINCREMENT))")
+    db.execute("CREATE TABLE IF NOT EXISTS `#{table_name}` (
+      `id` INTEGER NOT NULL UNIQUE,
+      `content` TEXT NOT NULL,
+      `ad` INTEGER NOT NULL,
+      `customer` INTEGER NOT NULL,
+      `is_from_customer` INTEGER NOT NULL,
+      `timestamp` INTEGER NOT NULL,
+      FOREIGN KEY(`customer`) REFERENCES `#{User.table_name}`(`id`),
+      FOREIGN KEY(`ad`) REFERENCES `#{Ad.table_name}`(`id`),
+      PRIMARY KEY(`id` AUTOINCREMENT))")
   end
 
   # @param user [User]

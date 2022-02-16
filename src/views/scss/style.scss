@@ -325,7 +325,9 @@ textarea {
     border-radius: 0.33rem;
     font-size: unset;
     line-height: inherit;
-    background-color: var(--bg-color);
+    &:not(.flat) {
+        background-color: var(--bg-color);
+    }
     color: inherit;
 
     &:not(.flat) {
