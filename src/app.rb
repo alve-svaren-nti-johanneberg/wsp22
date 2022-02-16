@@ -85,11 +85,12 @@ post '/ad/new' do
     imagefile = params[:cover][:tempfile]
     # filename = params[:cover][:filename]
     # extension = filename.split('.').last
-    new_name = "#{SecureRandom.uuid}.png"
+    new_name = "#{SecureRandom.uuid}.jpg"
 
     File.open("userimgs/#{new_name}", 'wb') do |f|
       image = Magick::Image.from_blob(imagefile.read).first
-      image.format = "png"
+      image.format = 'jpeg'
+      image.quality = 70
       image.resize_to_fit(720 * 4, 320 * 4).write(f)
     end
   end
