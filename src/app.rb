@@ -90,9 +90,9 @@ post '/ad/new' do
 
     new_file_name = "userimgs/#{new_name}"
 
-    File.open(new_file_name, 'wb') do |f|
-      f.write data
-    end
+    # File.open(new_file_name, 'wb') do |f|
+    #   f.write data
+    # end
     Thread.new do
       image = Magick::Image.from_blob(data).first
       image.format = 'jpeg'
