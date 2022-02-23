@@ -10,9 +10,7 @@ article.card
         | säljs av 
         a href="/user/#{ad.seller.id}" = ad.seller.name
         |  · #{ad.postal_code}
-    section.description
-      - ad.content.split("\n").each do |paragraph|
-        p = paragraph
+    section.description == markdown(ad.content)
     - if ad.seller == current_user
       form action="/ad/#{ad.id}/delete" method="post"
         input.destructive type="submit" value="Ta bort annons"
