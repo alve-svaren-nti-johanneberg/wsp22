@@ -9,7 +9,7 @@ div.messages-wrapper
         p Du är säljare av denna annonsen
   section#message-area
     div.padder
-    p.center.muted.pre
+    p.center.pre
       |Detta är början av din konversation med 
       a href="/user/#{(ad.seller == current_user ? to : ad.seller).id}" = (ad.seller == current_user ? to : ad.seller).name
     - messages.each_with_index do |message, index|
