@@ -188,7 +188,7 @@ get '/message/:id/:customer' do
 end
 
 get '/messages' do
-  slim :message_browser
+  slim :messages, locals: { ad: nil }
 end
 
 post '/register' do

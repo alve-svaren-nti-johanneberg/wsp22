@@ -23,6 +23,7 @@ a {
 
 #navbar {
     border-bottom: 2px solid var(--border-color);
+    height: $nav-height;
 
     > div {
         @include limit-width;
@@ -224,6 +225,44 @@ form.wide-form {
     max-height: 20rem;
     object-fit: cover;
     width: 100%;
+}
+
+.messages-container {
+    display: flex;
+    height: calc(100vh - #{$nav-height});
+    max-width: $page-width;
+    margin: 0 auto;
+    .conversations {
+        flex: 1;
+        max-width: 25rem;
+    }
+
+    .messages {
+        flex: 3;
+        height: 100%;
+    }
+
+    .messages-wrapper {
+        display: flex;
+        flex-direction: column;
+
+        #message-area {
+            height: 100%;
+            overflow-y: scroll;
+        }
+
+        .send-message-form {
+
+            background-color: var(--bg-color);
+            border-top: 2px solid var(--border-color);
+        }
+
+        height: 100%;
+    }
+}
+
+.padder {
+    flex: 1;
 }
 
 .message {

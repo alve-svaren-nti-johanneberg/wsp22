@@ -1,31 +1,19 @@
-article.card
-  section.ad-info
-    - if ad.image_name
-      img src="/userimg/#{ad.image_name}" alt="Bild på #{ad.title}"
-    a.title href="/ad/#{ad.id}" = ad.title
-    p.price.success = get_human_readable_price(ad.price)
+div.messages-container
+  section.conversations
+    h2 Du säljer
+    ul
+      - current_user.conversations[:seller].each do |conversation|
+        li.conversation
+          a href="/message/#{conversation[0]}/#{conversation[1]}" #{User.find_by_id(conversation[1]).name} angående #{Ad.find_by_id(conversation[0]).title}
+    h2 Du köper
+    ul
+      - current_user.conversations[:customer].each do |conversation|
+        li.conversation
+            a href="/message/#{conversation}" #{Ad.find_by_id(conversation).title}
 
-    - if ad.seller == current_user
-        p Du är säljare av denna annonsen
-  div.card-indent
-
-    section.message-area
-      p.center.muted.pre
-        |Detta är början av din konversation med 
-        a href="/user/#{(ad.seller == current_user ? to : ad.seller).id}" = (ad.seller == current_user ? to : ad.seller).name
-      - messages.each_with_index do |message, index|
-        - if message.timestamp.to_date != messages[index - 1].timestamp.to_date
-          p.center.muted.banner
-            |#{get_banner_date(message.timestamp)}
-        div.message class=(message.sender == current_user ? "sent" : "")
-          p.time = message.timestamp.strftime('%H:%M')
-          p.text = message.content
-      form.send-message-form action="#{request.path_info}" method="post"
-        input#new-message.full-width type="text" name="content" placeholder="Skriv meddelande"
-        input.fa type="submit" value=""
-
-javascript: 
-  setTimeout(() => {
-    document.querySelector("#new-message").focus()
-    document.body.scrollTo({top: document.body.offsetHeight})
-  }, 0);
+  - if ad
+    section.messages == slim :'partials/message-area', locals: { ad: ad, messages: messages, to: to }
+  - else
+    section.messages
+      p.center
+        |Välj en konversation i listan
