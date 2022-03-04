@@ -268,7 +268,7 @@ form.wide-form {
 
             &::before {
                 $before: "%3Csvg width='24px' height='24px' viewBox='0 0 0.633 0.842' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0v.842L.487.84A.152.152 0 0 0 .592.585L0 0z' fill='";
-                content: url("data:image/svg+xml,#{$before}#{str-replace($accent-color, '#', '%23')}#{$after}");
+                content: url('data:image/svg+xml,#{$before}#{str-replace("#{$accent-color}", "#", "%23")}#{$after}');
                 right: -$wing-size;
             }
         }
@@ -326,7 +326,7 @@ textarea {
     font-size: unset;
     line-height: inherit;
     &:not(.flat) {
-        background-color: var(--bg-color);
+        background-color: var(--field-background);
     }
     color: inherit;
 

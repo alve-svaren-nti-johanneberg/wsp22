@@ -1,7 +1,7 @@
 // Colors:
 $bubble-color: "#ddd";
 $dark-bubble-color: "#262a32";
-$accent-color: "#546fce";
+$accent-color: #546fce;
 :root {
     --bg-color: white;
     --bg-color-dark: #fafafa;
@@ -14,6 +14,7 @@ $accent-color: "#546fce";
     --red: #ff5252;
     --green: #4caf50;
     --bubble-color: #{$bubble-color};
+    --field-background: var(--bg-color);
 
     // Dark mode styles
     @media (prefers-color-scheme: dark) {
@@ -22,9 +23,11 @@ $accent-color: "#546fce";
         --bg-color-darker: #1c1f26;
         --text-color: white;
         --border-color: var(--bg-color-dark);
+        --accent-light-text-color: #{lighten($accent-color, 10)};
         --red: #ff5252;
-        --green: #4caf50;
+        --green: #55eb5a;
         --bubble-color: #{$dark-bubble-color};
+        --field-background: #0003;
     }
 }
 

@@ -33,6 +33,7 @@ not_found do
 end
 
 before do
+  status temp_session(:status_code) if session[:status_code]
   return if ignored_paths.include? request.path_info
 
   if !current_user && auth_needed.map { |path| request.path_info.start_with?(path) }.any?
@@ -118,16 +119,14 @@ end
 
 post '/ad/:id/delete' do
   ad = Ad.find_by_id(params[:id])
-  if ad
-    return forbidden unless ad.seller == current_user
+  raise Sinatra::NotFound unless ad
 
-    ad.delete
-    session[:msg] = 'Annonsen har raderats'
-    session[:success] = true
-    redirect '/'
-  else
-    raise Sinatra::NotFound
-  end
+  return forbidden unless ad.seller == current_user
+
+  ad.delete
+  session[:msg] = 'Annonsen har raderats'
+  session[:success] = true
+  redirect '/'
 end
 
 get '/login' do
@@ -173,8 +172,7 @@ end
 post '/message/:id/:customer' do
   customer = User.find_by_id(params[:customer])
   ad = Ad.find_by_id(params[:id])
-  raise Sinatra::NotFound unless ad
-  raise Sinatra::NotFound unless customer
+  raise Sinatra::NotFound unless ad && customer
 
   Message.create(ad, current_user, customer, params[:content])
   redirect "/message/#{ad.id}/#{customer.id}"
