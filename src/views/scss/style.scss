@@ -256,6 +256,8 @@ form.wide-form {
             height: 100%;
             overflow-y: scroll;
             padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
         }
     }
 }
