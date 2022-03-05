@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
-require 'bcrypt'
-require 'sqlite3'
-require_relative 'utils'
+require "bcrypt"
+require "sqlite3"
+require_relative "utils"
 
 def db
-  tmp = SQLite3::Database.new 'data.db'
+  tmp = SQLite3::Database.new "data.db"
   tmp.results_as_hash = true
   tmp
 end
@@ -23,7 +23,7 @@ class DbModel
   end
 
   def initialize(data)
-    @id = data['id']
+    @id = data["id"]
   end
 
   def ==(other)
@@ -38,7 +38,7 @@ class User < DbModel
   attr_reader :email, :name, :admin
 
   def self.table_name
-    'Users'
+    "Users"
   end
 
   def self.create_table
@@ -53,10 +53,10 @@ class User < DbModel
 
   def initialize(data)
     super data
-    @email = data['email']
-    @name = data['name']
-    @admin = data['admin'] || false
-    @password_hash = BCrypt::Password.new(data['password_hash'])
+    @email = data["email"]
+    @name = data["name"]
+    @admin = data["admin"] || false
+    @password_hash = BCrypt::Password.new(data["password_hash"])
   end
 
   def self.create(name, email, password)
@@ -112,7 +112,7 @@ class Ad < DbModel
   attr_reader :price, :seller, :title, :content, :sold, :postal_code, :image_name
 
   def self.table_name
-    'Ads'
+    "Ads"
   end
 
   def self.create_table
@@ -131,13 +131,13 @@ class Ad < DbModel
 
   def initialize(data)
     super data
-    @price = data['price']
-    @seller = User.find_by_id(data['seller'])
-    @title = data['title']
-    @postal_code = data['postal_code']
-    @content = data['content']
-    @sold = data['sold']
-    @image_name = data['image_name']
+    @price = data["price"]
+    @seller = User.find_by_id(data["seller"])
+    @title = data["title"]
+    @postal_code = data["postal_code"]
+    @content = data["content"]
+    @sold = data["sold"]
+    @image_name = data["image_name"]
   end
 
   # @param title [String]
@@ -155,12 +155,12 @@ class Ad < DbModel
   def self.search(words)
     query = words.empty? && "SELECT * FROM #{table_name}"
     wildcards = words.map do
-      'title LIKE ?'
+      "title LIKE ?"
     end
     words.map! do |word|
       "%#{word}%"
     end
-    db.execute(query || "SELECT * FROM #{table_name} WHERE #{wildcards.join(' AND ')}", words).map do |data|
+    db.execute(query || "SELECT * FROM #{table_name} WHERE #{wildcards.join(" AND ")}", words).map do |data|
       Ad.new(data)
     end
   end
@@ -181,7 +181,7 @@ class Message < DbModel
   attr_reader :content, :ad, :customer, :sender, :receiver, :timestamp
 
   def self.table_name
-    'Messages'
+    "Messages"
   end
 
   def self.create_table
@@ -207,11 +207,11 @@ class Message < DbModel
 
   def initialize(data)
     super data
-    @ad = Ad.find_by_id(data['ad'])
-    @content = data['content']
-    @timestamp = Time.at(data['timestamp'])
-    @customer = User.find_by_id(data['customer'])
-    @from_customer = !data['is_from_customer'].zero?
+    @ad = Ad.find_by_id(data["ad"])
+    @content = data["content"]
+    @timestamp = Time.at(data["timestamp"])
+    @customer = User.find_by_id(data["customer"])
+    @from_customer = !data["is_from_customer"].zero?
     @sender = @from_customer ? @customer : @ad.seller
     @receiver = @from_customer ? @ad.seller : @customer
   end
@@ -236,7 +236,7 @@ class Message < DbModel
   end
 end
 
-Dir.mkdir('userimgs') unless Dir.exist?('userimgs')
+Dir.mkdir("userimgs") unless Dir.exist?("userimgs")
 
 User.create_table
 Ad.create_table

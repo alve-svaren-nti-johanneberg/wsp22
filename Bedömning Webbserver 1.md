@@ -1,16 +1,14 @@
-
-
 # Bedömningsshandledning Webbserverprogrammering 1
 
 ## Matris
 
-| Aspekt         | E                                                            | C                                                            | A                                                            |
-| -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Dokumentation  | Tillsammans med läraren dokumenterar du **översiktligt** din applikations funktionalitet, utvecklingsprocess och säkerhet och använder **med viss säkerhet *enkel*** terminologi. | Med läraren som bollplank dokumenterar du **utförligt** din applikations funktionalitet, utvecklingsprocess och säkerhet och använder **med viss säkerhet** ***korrekt*** terminologi. | Med läraren som bollplank dokumenterar du **utförligt  och nyanserat** din applikations funktionalitet, utvecklingsprocess och säkerhet och **använder med säkerhet *korrekt*** terminologi. |
-| Arkitektur     | Tillsammans med läraren utvecklar du en applikation där koden har en **enkel** kodstruktur. | Med läraren som bollplank utvecklar du en applikation där koden har en **god** kodstruktur. | Med läraren som bollplank utvecklar du en applikation där koden **följer MVC** och **följer en given kodstandard.** |
-| Funktionalitet | Tillsammans med läraren  utvecklar du en applikation med **enkel** funktionalitet. | Med läraren som bollplank utvecklar du en applikation med **inloggningssystem** och **tillfredsställande** funktionalitet. | Med läraren som bollplank utvecklar du en applikation med ett **inloggningssystem** och **komplex** funktionalitet. |
-| Datalagring    | Tillsammans med läraren  utvecklar du en applikation som använder en **enkel** lösning för att spara data mellan sidvisningar. | Med läraren som bollplank utvecklar du en applikation som använder en e**nkel databaslösning** för att spara data mellan sidvisningar. | Med läraren som bollplank utvecklar du en applikation som använder en **komplex databaslösning** för att spara data mellan sidvisningar. |
-| Säkerhet       | Tillsammans med läraren vidtar du **enkla** åtgärder för att förhindra att applikationen utnyttjas. | Med läraren som bollplank vidtar du **lite mer avancerade** åtgärder för att förhindra att applikationen utnyttjas. | Med läraren som bollplank vidtar du **avancerade** åtgärder för att förhindra att applikationen utnyttjas. |
+| Aspekt         | E                                                                                                                                                                                 | C                                                                                                                                                                                      | A                                                                                                                                                                                           |
+| -------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Dokumentation  | Tillsammans med läraren dokumenterar du **översiktligt** din applikations funktionalitet, utvecklingsprocess och säkerhet och använder **med viss säkerhet _enkel_** terminologi. | Med läraren som bollplank dokumenterar du **utförligt** din applikations funktionalitet, utvecklingsprocess och säkerhet och använder **med viss säkerhet** **_korrekt_** terminologi. | Med läraren som bollplank dokumenterar du **utförligt och nyanserat** din applikations funktionalitet, utvecklingsprocess och säkerhet och **använder med säkerhet _korrekt_** terminologi. |
+| Arkitektur     | Tillsammans med läraren utvecklar du en applikation där koden har en **enkel** kodstruktur.                                                                                       | Med läraren som bollplank utvecklar du en applikation där koden har en **god** kodstruktur.                                                                                            | Med läraren som bollplank utvecklar du en applikation där koden **följer MVC** och **följer en given kodstandard.**                                                                         |
+| Funktionalitet | Tillsammans med läraren utvecklar du en applikation med **enkel** funktionalitet.                                                                                                 | Med läraren som bollplank utvecklar du en applikation med **inloggningssystem** och **tillfredsställande** funktionalitet.                                                             | Med läraren som bollplank utvecklar du en applikation med ett **inloggningssystem** och **komplex** funktionalitet.                                                                         |
+| Datalagring    | Tillsammans med läraren utvecklar du en applikation som använder en **enkel** lösning för att spara data mellan sidvisningar.                                                     | Med läraren som bollplank utvecklar du en applikation som använder en e**nkel databaslösning** för att spara data mellan sidvisningar.                                                 | Med läraren som bollplank utvecklar du en applikation som använder en **komplex databaslösning** för att spara data mellan sidvisningar.                                                    |
+| Säkerhet       | Tillsammans med läraren vidtar du **enkla** åtgärder för att förhindra att applikationen utnyttjas.                                                                               | Med läraren som bollplank vidtar du **lite mer avancerade** åtgärder för att förhindra att applikationen utnyttjas.                                                                    | Med läraren som bollplank vidtar du **avancerade** åtgärder för att förhindra att applikationen utnyttjas.                                                                                  |
 
 ### E-nivå
 
@@ -25,17 +23,18 @@ Gemensamt för samtliga aspekter på C-nivå är större grad av självständigh
 Gemensamt för samtliga aspekter på A-nivå är en större grad av självständighet än på E-nivå.
 
 ## Dokumentation
-| E                                                            | C                                                            | A                                                            |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Tillsammans med läraren dokumenterar du **översiktligt** din applikations funktionalitet, utvecklingsprocess och säkerhet och använder **med viss säkerhet \*enkel\*** terminologi. | Med läraren som bollplank dokumenterar du **utförligt** din applikations funktionalitet, utvecklingsprocess och säkerhet och använder **med viss säkerhet** ***korrekt\*** terminologi. | Med läraren som bollplank dokumenterar du **utförligt  och nyanserat** din applikations funktionalitet, utvecklingsprocess och säkerhet och **använder med säkerhet \*korrekt\*** terminologi. |
+
+| E                                                                                                                                                                                   | C                                                                                                                                                                                        | A                                                                                                                                                                                             |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Tillsammans med läraren dokumenterar du **översiktligt** din applikations funktionalitet, utvecklingsprocess och säkerhet och använder **med viss säkerhet \*enkel\*** terminologi. | Med läraren som bollplank dokumenterar du **utförligt** din applikations funktionalitet, utvecklingsprocess och säkerhet och använder **med viss säkerhet** **\*korrekt\*** terminologi. | Med läraren som bollplank dokumenterar du **utförligt och nyanserat** din applikations funktionalitet, utvecklingsprocess och säkerhet och **använder med säkerhet \*korrekt\*** terminologi. |
 
 ### E-nivå
 
-Eleven har en enkel beskrivning över applikationens funktionalitet (en enkel domänbeskrivning) och ett enkelt er-diagram. Eleven har svårt för begrepp som t.ex *route*, *resurs*, *vy*, *entitet*.
+Eleven har en enkel beskrivning över applikationens funktionalitet (en enkel domänbeskrivning) och ett enkelt er-diagram. Eleven har svårt för begrepp som t.ex _route_, _resurs_, _vy_, _entitet_.
 
 ### C-nivå
 
-Eleven har utförlig domänbeskrivning som beskriver olika användares behörigheter, och ett korrekt er-diagram. Eleven har svårt för mer avancerade begrepp som *RESTFUL* och *kardinalitet*.
+Eleven har utförlig domänbeskrivning som beskriver olika användares behörigheter, och ett korrekt er-diagram. Eleven har svårt för mer avancerade begrepp som _RESTFUL_ och _kardinalitet_.
 
 ### A-nivå
 
@@ -43,8 +42,8 @@ Eleven har domänbeskrivning likt C-nivå, och använder obehinrdat de flesta be
 
 ## Arkitektur
 
-| E                                                            | C                                                            | A                                                            |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| E                                                                                           | C                                                                                           | A                                                                                                                   |
+| ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
 | Tillsammans med läraren utvecklar du en applikation där koden har en **enkel** kodstruktur. | Med läraren som bollplank utvecklar du en applikation där koden har en **god** kodstruktur. | Med läraren som bollplank utvecklar du en applikation där koden **följer MVC** och **följer en given kodstandard.** |
 
 ### E-nivå
@@ -71,17 +70,17 @@ Eleven följer REST fullt ut.
 
 ## Funktionalitet
 
-| E                                                            | C                                                            | A                                                            |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Tillsammans med läraren  utvecklar du en applikation med **enkel** funktionalitet. | Med läraren som bollplank utvecklar du en applikation med **inloggningssystem** och **tillfredsställande** funktionalitet. | Med läraren som bollplank utvecklar du en applikation med ett **inloggningssystem** och **komplex** funktionalitet. |
+| E                                                                                 | C                                                                                                                          | A                                                                                                                   |
+| --------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- |
+| Tillsammans med läraren utvecklar du en applikation med **enkel** funktionalitet. | Med läraren som bollplank utvecklar du en applikation med **inloggningssystem** och **tillfredsställande** funktionalitet. | Med läraren som bollplank utvecklar du en applikation med ett **inloggningssystem** och **komplex** funktionalitet. |
 
 ### E-nivå
 
-Applikationen erbjuder ett enkelt CRUD-gränssnitt (åtminstone Create/Show/Delete) för någon resurs. 
+Applikationen erbjuder ett enkelt CRUD-gränssnitt (åtminstone Create/Show/Delete) för någon resurs.
 
 ### C-nivå
 
-Applikationen erbjuder ett enkelt CRUD-gränssnitt för några resurser, varav minst en har en association/relation till en annan resurs. 
+Applikationen erbjuder ett enkelt CRUD-gränssnitt för några resurser, varav minst en har en association/relation till en annan resurs.
 
 Appliktionen har ett inloggninssystem, och det finns skillnad på vad man kan göra beroende på om man är inloggad eller ej.
 
@@ -95,9 +94,9 @@ Eleven använder automatiserade tester (capybara) för att testa någon funktion
 
 ## Datalagring
 
-| E                                                            | C                                                            | A                                                            |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| Tillsammans med läraren  utvecklar du en applikation som använder en **enkel** lösning för att spara data mellan sidvisningar. | Med läraren som bollplank utvecklar du en applikation som använder en e**nkel databaslösning** för att spara data mellan sidvisningar. | Med läraren som bollplank utvecklar du en applikation som använder en **komplex databaslösning** för att spara data mellan sidvisningar. |
+| E                                                                                                                             | C                                                                                                                                      | A                                                                                                                                        |
+| ----------------------------------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| Tillsammans med läraren utvecklar du en applikation som använder en **enkel** lösning för att spara data mellan sidvisningar. | Med läraren som bollplank utvecklar du en applikation som använder en e**nkel databaslösning** för att spara data mellan sidvisningar. | Med läraren som bollplank utvecklar du en applikation som använder en **komplex databaslösning** för att spara data mellan sidvisningar. |
 
 ### E-nivå
 
@@ -113,8 +112,8 @@ Eleven har en databas med flera tabeller, varav minst två beskriver ett många-
 
 ## Säkerhet
 
-| E                                                            | C                                                            | A                                                            |
-| ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| E                                                                                                   | C                                                                                                                   | A                                                                                                          |
+| --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
 | Tillsammans med läraren vidtar du **enkla** åtgärder för att förhindra att applikationen utnyttjas. | Med läraren som bollplank vidtar du **lite mer avancerade** åtgärder för att förhindra att applikationen utnyttjas. | Med läraren som bollplank vidtar du **avancerade** åtgärder för att förhindra att applikationen utnyttjas. |
 
 ### E-nivå
