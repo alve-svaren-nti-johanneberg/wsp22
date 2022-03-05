@@ -30,5 +30,5 @@ def get_banner_date(time)
   months = %w[Januari Februari Mars April Maj Juni Juli Augusti September Oktober November December]
   days = %w[Söndag Måndag Tisdag Onsdag Torsdag Fredag Lördag]
 
-  time.strftime("#{days[time.wday]} %-d #{months[time.month]} %Y")
+  time.strftime("#{days[time.wday]} %-d #{months[time.month - 1]} %Y")
 end
