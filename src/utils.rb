@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-require "sinatra"
-require_relative "database"
+require 'sinatra'
+require_relative 'database'
 
 def temp_session(symbol)
   value = session[symbol]
@@ -19,11 +19,11 @@ end
 
 def group_number(num, length = 3)
   # 12345 => 12 345
-  format("%i", num).chars.reverse.each_slice(length).reverse_each.map { |x| x.reverse.join }.join(" ")
+  format('%i', num).chars.reverse.each_slice(length).reverse_each.map { |x| x.reverse.join }.join(' ')
 end
 
 def get_human_readable_price(price)
-  price.positive? ? "#{group_number(price, 3)} kr" : "Gratis"
+  price.positive? ? "#{group_number(price, 3)} kr" : 'Gratis'
 end
 
 def get_banner_date(time)
