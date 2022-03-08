@@ -4,7 +4,6 @@ div.messages-wrapper
       img src="/userimg/#{ad.image_name}" alt="Bild på #{ad.title}"
     a.title href="/ad/#{ad.id}" = ad.title
     p.price.success = get_human_readable_price(ad.price)
-
     - if ad.seller == current_user
         p Du är säljare av denna annonsen
   section#message-area
