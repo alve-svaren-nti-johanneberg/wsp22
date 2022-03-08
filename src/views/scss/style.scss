@@ -190,6 +190,9 @@ form.wide-form {
 
 .send-message-form {
     position: relative;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    background-color: var(--bg-color);
 
     input[type="submit"] {
         position: absolute;
@@ -232,9 +235,11 @@ form.wide-form {
     height: calc(100vh - #{$nav-height});
     max-width: $page-width;
     margin: 0 auto;
+
     .conversations {
         flex: 1;
         max-width: 25rem;
+        border-right: 2px solid var(--border-color);
     }
 
     .messages {
@@ -245,19 +250,15 @@ form.wide-form {
     .messages-wrapper {
         display: flex;
         flex-direction: column;
+        height: 100%;
 
         #message-area {
             height: 100%;
             overflow-y: scroll;
+            padding: 0.5rem;
+            display: flex;
+            flex-direction: column;
         }
-
-        .send-message-form {
-
-            background-color: var(--bg-color);
-            border-top: 2px solid var(--border-color);
-        }
-
-        height: 100%;
     }
 }
 

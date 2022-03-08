@@ -93,7 +93,9 @@ class User < DbModel
   def conversations
     as_seller = []
     as_customer = []
-    db.execute("SELECT * FROM #{Message.table_name} WHERE customer = ? OR ad IN (SELECT id FROM #{Ad.table_name} WHERE seller = ?)", @id, @id).map do |message|
+    db.execute(
+      "SELECT * FROM #{Message.table_name} WHERE customer = ? OR ad IN (SELECT id FROM #{Ad.table_name} WHERE seller = ?)", @id, @id
+    ).map do |message|
       message = Message.new(message)
       unless as_seller.include?([message.ad.id, message.customer.id]) || as_customer.include?(message.ad.id)
         if message.customer == self

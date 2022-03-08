@@ -7,12 +7,12 @@ div.messages-wrapper
     - if ad.seller == current_user
         p Du är säljare av denna annonsen
   section#message-area
-    div.padder
     p.center.pre
       |Detta är början av din konversation med 
       a href="/user/#{(ad.seller == current_user ? to : ad.seller).id}" = (ad.seller == current_user ? to : ad.seller).name
+    div.padder
     - messages.each_with_index do |message, index|
-      - if message.timestamp.to_date != messages[index - 1].timestamp.to_date
+      - if index == 0 || message.timestamp.to_date != messages[index - 1].timestamp.to_date
         p.center.muted.banner
           |#{get_banner_date(message.timestamp)}
       div.message class=(message.sender == current_user ? "sent" : "")
