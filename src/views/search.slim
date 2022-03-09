@@ -1,6 +1,6 @@
 section.limit-width
   form.full-width action="/search" method="get"
-    input.full-width#search-input name="query" type="text" placeholder="Sök vara"
+    input.full-width#search-input name="query" type="text" value="#{params[:query]}" placeholder="Sök vara"
   p = "#{ads.count} annonser matchar sökningen"
   ul.ad-list
     - ads.each do |ad|
