@@ -1,11 +1,7 @@
-
-h1.center Annonser
 section.limit-width
+  form.full-width action="/search" method="get"
+    input.full-width#search-input name="query" type="text" placeholder="Sök vara"
   p = "#{ads.count} annonser matchar sökningen"
-  - ads.each do |ad|
-    a.search-result href="/ad/#{ad.id}"
-      article.card
-        / img src="/userimg/#{ad.image_id}" alt="Bild på #{ad.title}"
-        div.card-indent
-          h1 = ad.title
-          h2 = get_human_readable_price(ad.price)
+  ul.ad-list
+    - ads.each do |ad|
+      == slim :'partials/listed-ad', locals: { ad: ad }
