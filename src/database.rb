@@ -40,7 +40,7 @@ end
 
 # A user
 class User < DbModel
-  attr_reader :email, :name, :admin
+  attr_reader :email, :name, :admin, :conversations
 
   def self.table_name
     'Users'

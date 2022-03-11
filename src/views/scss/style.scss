@@ -157,10 +157,9 @@ main > .card {
     .card-indent {
         &.slim {
             margin: .5rem 2rem;
+            width: 100%;
         }
-        margin: 2rem 0;
-        padding: 0 2rem;
-        width: 100%;
+        margin: 2rem;
         &:not(:first-child):not(.fully-pad) {
             margin-top: 0;
         }
