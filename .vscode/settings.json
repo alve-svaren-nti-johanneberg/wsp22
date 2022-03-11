@@ -1,0 +1,10 @@
+{
+    "sqltools.connections": [
+        {
+            "previewLimit": 500,
+            "driver": "SQLite",
+            "name": "wsp22",
+            "database": "${workspaceFolder:wsp22}/src/data.db"
+        }
+    ]
+}
