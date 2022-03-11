@@ -158,7 +158,8 @@ main > .card {
         &.slim {
             margin: .5rem 2rem;
         }
-        margin: 2rem;
+        margin: 2rem 0;
+        padding: 0 2rem;
         width: 100%;
         &:not(:first-child):not(.fully-pad) {
             margin-top: 0;

@@ -31,6 +31,11 @@ class DbModel
 
     @id == other.id
   end
+
+  def self.find_by_id(id)
+    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
+    data && new(data)
+  end
 end
 
 # A user
@@ -77,11 +82,6 @@ class User < DbModel
 
   def verify_password(password)
     @password_hash == password
-  end
-
-  def self.find_by_id(id)
-    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
-    data && User.new(data)
   end
 
   def ads
@@ -167,11 +167,6 @@ class Ad < DbModel
     end
   end
 
-  def self.find_by_id(id)
-    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
-    data && Ad.new(data)
-  end
-
   def delete
     db.execute("DELETE FROM #{table_name} WHERE id = ?", @id)
     File.delete("userimgs/#{@image_name}") if @image_name
@@ -216,11 +211,6 @@ class Message < DbModel
     @from_customer = !data['is_from_customer'].zero?
     @sender = @from_customer ? @customer : @ad.seller
     @receiver = @from_customer ? @ad.seller : @customer
-  end
-
-  def self.find_by_id(id)
-    data = db.execute("SELECT * FROM #{table_name} WHERE id = ?", id).first
-    data && Message.new(data)
   end
 
   # @param ad [Ad]
