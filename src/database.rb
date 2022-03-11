@@ -12,7 +12,7 @@ end
 
 # An abstract class for all database objects
 class DbModel
-  attr_reader :id
+  attr_reader :id, :hash
 
   def self.table_name; end
 
@@ -23,6 +23,7 @@ class DbModel
   end
 
   def initialize(data)
+    @hash = data
     @id = data['id']
   end
 
@@ -119,7 +120,7 @@ end
 
 # An ad that a user created
 class Ad < DbModel
-  attr_reader :price, :seller, :title, :content, :sold, :postal_code, :image_name
+  attr_reader :price, :seller, :title, :content, :sold, :postal_code, :image_name, :created_at
 
   def self.table_name
     'Ads'
@@ -135,6 +136,7 @@ class Ad < DbModel
       `seller` INTEGER NOT NULL,
       `postal_code` TEXT NOT NULL,
       `image_name` TEXT,
+      `created_at` INTEGER NOT NULL,
       FOREIGN KEY(`seller`) REFERENCES `#{User.table_name}`(`id`),
       PRIMARY KEY(`id` AUTOINCREMENT))")
   end
@@ -148,6 +150,7 @@ class Ad < DbModel
     @content = data['content']
     @sold = data['sold']
     @image_name = data['image_name']
+    @created_at = Time.at(data['created_at'])
   end
 
   # @param title [String]
@@ -157,8 +160,8 @@ class Ad < DbModel
   # @param postal_code [String, Integer]
   def self.create(title, content, price, seller_id, postal_code, image_name)
     session = db
-    session.execute("INSERT INTO #{table_name} (title, content, price, seller, postal_code, image_name) VALUES (?, ?, ?, ?, ?, ?)",
-                    title, content, price, seller_id, postal_code, image_name)
+    session.execute("INSERT INTO #{table_name} (title, content, price, seller, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+                    title, content, price, seller_id, postal_code, image_name, Time.now.to_i)
     session.last_insert_row_id
   end
 
@@ -177,6 +180,7 @@ class Ad < DbModel
 
   def delete
     db.execute("DELETE FROM #{table_name} WHERE id = ?", @id)
+    db.execute("DELETE FROM #{Message.table_name} WHERE ad_id = ?", @id)
     File.delete("userimgs/#{@image_name}") if @image_name
   end
 
@@ -198,29 +202,29 @@ class Message < DbModel
     db.execute("CREATE TABLE IF NOT EXISTS `#{table_name}` (
       `id` INTEGER NOT NULL UNIQUE,
       `content` TEXT NOT NULL,
-      `ad` INTEGER NOT NULL,
+      `ad_id` INTEGER NOT NULL,
       `customer` INTEGER NOT NULL,
       `is_from_customer` INTEGER NOT NULL,
       `timestamp` INTEGER NOT NULL,
-      FOREIGN KEY(`customer`) REFERENCES `#{User.table_name}`(`id`),
-      FOREIGN KEY(`ad`) REFERENCES `#{Ad.table_name}`(`id`),
+      FOREIGN KEY(`customer_id`) REFERENCES `#{User.table_name}`(`id`),
+      FOREIGN KEY(`ad_id`) REFERENCES `#{Ad.table_name}`(`id`),
       PRIMARY KEY(`id` AUTOINCREMENT))")
   end
 
   # @param user [User]
   # @param ad [Ad]
   def self.conversation(user, ad)
-    db.execute("SELECT * FROM #{table_name} WHERE customer = ? AND ad = ?", user.id, ad.id).map do |data|
+    db.execute("SELECT * FROM #{table_name} WHERE customer_id = ? AND ad_id = ?", user.id, ad.id).map do |data|
       Message.new(data)
     end
   end
 
   def initialize(data)
     super data
-    @ad = Ad.find_by_id(data['ad'])
+    @ad = Ad.find_by_id(data['ad_id'])
     @content = data['content']
     @timestamp = Time.at(data['timestamp'])
-    @customer = User.find_by_id(data['customer'])
+    @customer = User.find_by_id(data['customer_id'])
     @from_customer = !data['is_from_customer'].zero?
     @sender = @from_customer ? @customer : @ad.seller
     @receiver = @from_customer ? @ad.seller : @customer
@@ -234,7 +238,7 @@ class Message < DbModel
     from_customer = sender != ad.seller
     session = db
     session.execute(
-      "INSERT INTO #{table_name} (ad, customer, is_from_customer, content, timestamp) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO #{table_name} (ad_id, customer_id, is_from_customer, content, timestamp) VALUES (?, ?, ?, ?, ?)",
       ad.id, (from_customer ? sender : receiver).id, from_customer ? 1 : 0, content, Time.now.to_i
     )
     session.last_insert_row_id
@@ -301,6 +305,8 @@ class Category < DbModel
 
   def self.create(name)
     slug = name.downcase.gsub(/[^a-z0-9]+/, '-')
+    return nil if find_by_slug(slug)
+
     session = db
     session.execute("INSERT INTO #{table_name} (name, slug) VALUES (?)", name, slug)
     session.last_insert_row_id

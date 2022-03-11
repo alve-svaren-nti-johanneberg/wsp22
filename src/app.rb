@@ -233,3 +233,5 @@ post '/login' do
     redirect '/login'
   end
 end
+
+puts "Timezone is #{Time.now.zone} with offset #{Time.now.utc_offset / 3600}h"
