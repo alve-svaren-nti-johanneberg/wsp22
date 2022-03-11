@@ -3,8 +3,16 @@ article.card
   div.card-indent
     h1 #{user.name}s profil
 
+    - if user.admin
+      p.admin
+        | Administratör
+
     h2 Annonser
-    ul.ad-list
-      - for ad in user.ads
-        li
-          a href="/ad/#{ad.id}" = ad.title
+    - if user.ads.empty?
+      p.no-ads
+        | Användaren har inga aktiva annonser
+    -else
+      ul.user-ad-list
+        - for ad in user.ads
+          li
+            a href="/ad/#{ad.id}" = ad.title

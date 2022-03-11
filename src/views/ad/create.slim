@@ -8,6 +8,6 @@ article.card
         div
           input.flat type="text" maxlength="64" placeholder="Ange titel" name="title"
           input.flat type="number" oninput="this.reportValidity()" min="0" max="1000000000000" placeholder="Pris (i kr)" name="price"
-        input.flat type="text" title="Postnummer, t.ex 12345" oninput="this.reportValidity()" pattern="[1-9]\d{4}" placeholder="Ange postnummer" name="postal_code"
+        input.flat type="text" title="Postnummer, t.ex 12345" oninput="this.reportValidity()" pattern="[1-9]\d{4}" placeholder="Ange postnummer" value="#{current_user.postal_code}" name="postal_code"
       textarea.flat name="content" rows="8" placeholder="Beskrivning av vara"
       input.full-width type="submit" value="Skapa annons"

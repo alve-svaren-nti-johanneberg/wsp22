@@ -28,7 +28,6 @@ def unauthorized
 end
 
 not_found do
-  status 404
   slim :'404'
 end
 
@@ -38,6 +37,7 @@ before do
 
   if !current_user && auth_needed.map { |path| request.path_info.start_with?(path) }.any?
     session[:return_to] = request.fullpath
+    session[:status_code] = 403
     redirect '/auth-needed'
   end
   # If the user has gone and done something else than logging in or registering,
@@ -121,7 +121,7 @@ post '/ad/:id/delete' do
   ad = Ad.find_by_id(params[:id])
   raise Sinatra::NotFound unless ad
 
-  return forbidden unless ad.seller == current_user
+  return forbidden unless ad.seller == current_user || current_user.admin
 
   ad.delete
   session[:msg] = 'Annonsen har raderats'
@@ -194,6 +194,8 @@ end
 post '/register' do
   error = nil
 
+  postal_code = params[:postal_code].delete(' ').delete('-').to_i
+  error = 'Postnummret måste vara 5 siffror' unless postal_code.to_s.length == 5
   error = 'Lösenorden matchar inte' unless params[:password] == params[:'confirm-password']
   error = 'Du måste ange ett lösenord' if params[:password] && params[:password].empty?
   error = 'Du måste ange ett namn' if params[:name] && params[:name].empty?
@@ -209,7 +211,7 @@ post '/register' do
     return redirect '/register'
   end
 
-  user_id = User.create(params[:name], params[:email], params[:password])
+  user_id = User.create(params[:name], params[:email], params[:password], postal_code)
   if !user_id.nil?
     session[:user_id] = user_id
     redirect(temp_session(:return_to) || '/')
