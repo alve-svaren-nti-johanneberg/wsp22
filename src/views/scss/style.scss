@@ -60,6 +60,10 @@ a {
     margin-top: 3rem;
 }
 
+.user-ad-list {
+    padding: 0;
+}
+
 .listed-ad {
     > a {
         text-decoration: none;
@@ -78,6 +82,12 @@ a {
             aspect-ratio: 5 / 3;
             width: 12rem;
         }
+    }
+}
+
+.user-ad-list {
+    .card {
+        background-color: var(--bg-color-dark);
     }
 }
 
