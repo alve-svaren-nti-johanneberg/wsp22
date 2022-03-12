@@ -94,7 +94,7 @@ class User < DbModel
   end
 
   def ads
-    db.execute("SELECT * FROM #{Ad.table_name} WHERE seller = ?", @id).map do |ad|
+    db.execute("SELECT * FROM #{Ad.table_name} WHERE seller_id = ?", @id).map do |ad|
       Ad.new(ad)
     end
   end
@@ -103,7 +103,7 @@ class User < DbModel
     as_seller = []
     as_customer = []
     db.execute(
-      "SELECT * FROM #{Message.table_name} WHERE customer = ? OR ad IN (SELECT id FROM #{Ad.table_name} WHERE seller = ?)", @id, @id
+      "SELECT * FROM #{Message.table_name} WHERE customer_id = ? OR ad IN (SELECT id FROM #{Ad.table_name} WHERE seller_id = ?)", @id, @id
     ).map do |message|
       message = Message.new(message)
       unless as_seller.include?([message.ad.id, message.customer.id]) || as_customer.include?(message.ad.id)
@@ -133,18 +133,18 @@ class Ad < DbModel
       `title` TEXT NOT NULL,
       `content` TEXT NOT NULL,
       `sold` INTEGER NOT NULL DEFAULT 0,
-      `seller` INTEGER NOT NULL,
+      `seller_id` INTEGER NOT NULL,
       `postal_code` TEXT NOT NULL,
       `image_name` TEXT,
       `created_at` INTEGER NOT NULL,
-      FOREIGN KEY(`seller`) REFERENCES `#{User.table_name}`(`id`),
+      FOREIGN KEY(`seller_id`) REFERENCES `#{User.table_name}`(`id`),
       PRIMARY KEY(`id` AUTOINCREMENT))")
   end
 
   def initialize(data)
     super data
     @price = data['price']
-    @seller = User.find_by_id(data['seller'])
+    @seller = User.find_by_id(data['seller_id'])
     @title = data['title']
     @postal_code = data['postal_code']
     @content = data['content']
@@ -160,7 +160,7 @@ class Ad < DbModel
   # @param postal_code [String, Integer]
   def self.create(title, content, price, seller_id, postal_code, image_name)
     session = db
-    session.execute("INSERT INTO #{table_name} (title, content, price, seller, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    session.execute("INSERT INTO #{table_name} (title, content, price, seller_id, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     title, content, price, seller_id, postal_code, image_name, Time.now.to_i)
     session.last_insert_row_id
   end
@@ -203,7 +203,7 @@ class Message < DbModel
       `id` INTEGER NOT NULL UNIQUE,
       `content` TEXT NOT NULL,
       `ad_id` INTEGER NOT NULL,
-      `customer` INTEGER NOT NULL,
+      `customer_id` INTEGER NOT NULL,
       `is_from_customer` INTEGER NOT NULL,
       `timestamp` INTEGER NOT NULL,
       FOREIGN KEY(`customer_id`) REFERENCES `#{User.table_name}`(`id`),
