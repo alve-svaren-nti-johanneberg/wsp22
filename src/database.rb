@@ -103,7 +103,7 @@ class User < DbModel
     as_seller = []
     as_customer = []
     db.execute(
-      "SELECT * FROM #{Message.table_name} WHERE customer_id = ? OR ad IN (SELECT id FROM #{Ad.table_name} WHERE seller_id = ?)", @id, @id
+      "SELECT * FROM #{Message.table_name} WHERE customer_id = ? OR ad_id IN (SELECT id FROM #{Ad.table_name} WHERE seller_id = ?)", @id, @id
     ).map do |message|
       message = Message.new(message)
       unless as_seller.include?([message.ad.id, message.customer.id]) || as_customer.include?(message.ad.id)

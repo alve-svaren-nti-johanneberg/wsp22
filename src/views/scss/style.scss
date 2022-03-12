@@ -24,6 +24,7 @@ a {
 #navbar {
     border-bottom: 2px solid var(--border-color);
     height: $nav-height;
+    display: flex;
 
     > div {
         @include limit-width;
