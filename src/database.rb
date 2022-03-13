@@ -63,7 +63,7 @@ class User < DbModel
     super data
     @email = data['email']
     @name = data['name']
-    @admin = data['admin'] || false
+    @admin = (data['admin'] == 1 && true) || false
     @created_at = Time.at(data['created_at'])
     @postal_code = data['postal_code']
     @password_hash = BCrypt::Password.new(data['password_hash'])
@@ -186,7 +186,7 @@ class Ad < DbModel
 
   def categories
     data = db.execute("SELECT * FROM #{AdCategory.table_name} WHERE ad_id = ?", @id)
-    data.length.positive? && data.map { |category| Category.find_by_id(category['category_id']) }
+    data.map { |category| Category.find_by_id(category['category_id']) }
   end
 end
 
@@ -286,21 +286,27 @@ class Category < DbModel
       PRIMARY KEY(`id` AUTOINCREMENT))")
   end
 
+  def initialize(data)
+    super data
+    @name = data['name']
+    @slug = data['slug']
+  end
+
   def self.find_by_slug(slug)
     return nil if slug.empty?
 
     data = db.execute("SELECT * FROM #{table_name} WHERE slug = ?", slug).first
-    data && User.new(data)
+    data && new(data)
   end
 
   def self.all
     data = db.execute("SELECT * FROM #{table_name}")
-    data.length.positive? && data.map { |category| new(category) }
+    data.map { |category| new(category) }
   end
 
   def ads
     data = db.execute("SELECT * FROM #{AdCategory.table_name} WHERE category_id = ?", @id)
-    data.length.positive? && data.map { |ad| Ad.find_by_id(ad['ad_id']) }
+    data.map { |ad| Ad.find_by_id(ad['ad_id']) }
   end
 
   def self.create(name)
@@ -308,7 +314,7 @@ class Category < DbModel
     return nil if find_by_slug(slug)
 
     session = db
-    session.execute("INSERT INTO #{table_name} (name, slug) VALUES (?)", name, slug)
+    session.execute("INSERT INTO #{table_name} (name, slug) VALUES (?, ?)", name, slug)
     session.last_insert_row_id
   end
 end

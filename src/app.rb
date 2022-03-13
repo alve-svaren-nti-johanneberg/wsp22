@@ -102,6 +102,17 @@ post '/ad/new' do
   redirect "/ad/#{ad}"
 end
 
+get '/categories' do
+  slim :'categories'
+end
+
+post '/categories' do
+  return unauthorized unless current_user.admin
+
+  session[:form_error] = "Kategorin '#{params[:name]}' finns redan" unless Category.create(params[:name])
+  redirect '/categories'
+end
+
 get '/ad/:id' do
   ad = Ad.find_by_id(params[:id])
   raise Sinatra::NotFound unless ad

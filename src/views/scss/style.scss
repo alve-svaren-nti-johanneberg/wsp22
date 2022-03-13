@@ -462,6 +462,7 @@ textarea {
 textarea {
     resize: vertical;
     font-family: unset;
+    min-height: 4em;
 }
 
 .limit-width {

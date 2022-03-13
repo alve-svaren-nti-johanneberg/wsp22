@@ -6,7 +6,7 @@
     content: "#{$fa-var-lock} ";
 }
 
-.create-ad-icon-prefix::before {
+.create-new-icon-prefix::before {
     @extend .fa;
     content: "#{$fa-var-plus} ";
 }
