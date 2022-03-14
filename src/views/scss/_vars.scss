@@ -18,9 +18,9 @@ $accent-color: #546fce;
 
     // Dark mode styles
     @media (prefers-color-scheme: dark) {
-        --bg-color: #2f343e;
-        --bg-color-dark: #262a32;
-        --bg-color-darker: #1c1f26;
+        --bg-color: #343842;
+        --bg-color-dark: #2f333c;
+        --bg-color-darker: #2a2e37;
         --text-color: white;
         --border-color: var(--bg-color-dark);
         --accent-light-text-color: #{lighten($accent-color, 10)};
