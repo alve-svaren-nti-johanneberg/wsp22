@@ -86,7 +86,7 @@ class User < DbModel
     return nil if email.empty?
 
     data = db.execute("SELECT * FROM #{table_name} WHERE email = ?", email).first
-    data && User.new(data)
+    data && new(data)
   end
 
   def verify_password(password)

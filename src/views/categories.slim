@@ -8,7 +8,7 @@ article.card
           a href="/category/#{category.slug}" = category.name
           span.count = " #{category.ads.count}"
 
-    - if current_user && current_user.admin
+    - if current_user&.admin
       form.wide-form.full-width action="/categories" method="post"
         input type="text" name="name" placeholder="Namn"
         input type="submit" value="Lägg till ny kategori"
