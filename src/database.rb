@@ -215,7 +215,7 @@ class Message < DbModel
   # @param ad [Ad]
   def self.conversation(user, ad)
     db.execute("SELECT * FROM #{table_name} WHERE customer_id = ? AND ad_id = ?", user.id, ad.id).map do |data|
-      Message.new(data)
+      new(data)
     end
   end
 
