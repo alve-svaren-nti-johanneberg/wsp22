@@ -192,8 +192,7 @@ end
 get '/message/:id/:customer' do
   customer = User.find_by_id(params[:customer])
   ad = Ad.find_by_id(params[:id])
-  raise Sinatra::NotFound unless ad
-  raise Sinatra::NotFound unless customer
+  raise Sinatra::NotFound unless ad && customer
 
   slim :messages, locals: { to: customer, ad: ad, messages: Message.conversation(customer, ad) }
 end
