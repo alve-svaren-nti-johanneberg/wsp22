@@ -187,7 +187,7 @@ post '/message/:id/:customer' do
   ad = Ad.find_by_id(params[:id])
   raise Sinatra::NotFound unless ad && customer
   return forbidden unless ad.seller == current_user
-  return forbidden unless customer.id != current_user
+  return forbidden if customer == current_user
 
   Message.create(ad, current_user, customer, params[:content])
   redirect "/message/#{ad.id}/#{customer.id}"
@@ -198,7 +198,7 @@ get '/message/:id/:customer' do
   ad = Ad.find_by_id(params[:id])
   raise Sinatra::NotFound unless ad && customer
   return forbidden unless ad.seller == current_user
-  return forbidden unless customer.id != current_user
+  return forbidden if customer == current_user
 
   slim :messages, locals: { to: customer, ad: ad, messages: Message.conversation(customer, ad) }
 end
