@@ -63,7 +63,7 @@ class User < DbModel
     super data
     @email = data['email']
     @name = data['name']
-    @admin = (data['admin'] == 1 && true) || false
+    @admin = data['admin'] == 1
     @created_at = Time.at(data['created_at'])
     @postal_code = data['postal_code']
     @password_hash = BCrypt::Password.new(data['password_hash'])

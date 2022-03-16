@@ -184,6 +184,7 @@ post '/message/:id/:customer' do
   customer = User.find_by_id(params[:customer])
   ad = Ad.find_by_id(params[:id])
   raise Sinatra::NotFound unless ad && customer
+  return forbidden unless ad.seller == current_user
 
   Message.create(ad, current_user, customer, params[:content])
   redirect "/message/#{ad.id}/#{customer.id}"
