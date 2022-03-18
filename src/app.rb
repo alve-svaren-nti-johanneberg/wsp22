@@ -181,7 +181,7 @@ post '/message/:id' do
   raise Sinatra::NotFound unless ad
   return forbidden unless ad.seller != current_user
 
-  Message.create(ad, current_user, ad.seller, params[:content])
+  Message.create(ad, current_user, ad.seller, params[:content]) unless params[:content].empty?
   redirect "/message/#{ad.id}"
 end
 
@@ -192,7 +192,7 @@ post '/message/:id/:customer' do
   return forbidden unless ad.seller == current_user
   return forbidden if customer == current_user
 
-  Message.create(ad, current_user, customer, params[:content])
+  Message.create(ad, current_user, customer, params[:content]) unless params[:content].empty?
   redirect "/message/#{ad.id}/#{customer.id}"
 end
 
