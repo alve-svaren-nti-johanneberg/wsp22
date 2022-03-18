@@ -12,7 +12,11 @@ end
 
 # An abstract class for all database objects
 class DbModel
-  attr_reader :id, :hash
+  # @return [Integer]
+  attr_reader :id
+
+  # @return [Hash<String, String>]
+  attr_reader :hash
 
   def self.table_name; end
 
@@ -160,11 +164,16 @@ class Ad < DbModel
   # @param price [Integer]
   # @param seller_id [Integer]
   # @param postal_code [String, Integer]
-  def self.create(title, content, price, seller_id, postal_code, image_name)
+  # @param categories [Array<Integer>]
+  def self.create(title, content, price, seller_id, postal_code, image_name, categories)
     session = db
     session.execute("INSERT INTO #{table_name} (title, content, price, seller_id, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     title, content, price, seller_id, postal_code, image_name, Time.now.to_i)
-    session.last_insert_row_id
+    ad = find_by_id(session.last_insert_row_id)
+    categories.each do |category_id|
+      ad.add_category(category_id)
+    end
+    ad
   end
 
   def self.search(words)

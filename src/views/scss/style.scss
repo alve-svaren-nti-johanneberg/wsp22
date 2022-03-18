@@ -17,6 +17,10 @@ body {
     font-weight: bold;
 }
 
+.bold {
+    font-weight: bold;
+}
+
 a {
     color: var(--accent-light-text-color);
 }
@@ -61,10 +65,6 @@ a {
     margin-top: 3rem;
 }
 
-.user-ad-list {
-    padding: 0;
-}
-
 .listed-ad {
     > a {
         text-decoration: none;
@@ -86,7 +86,33 @@ a {
     }
 }
 
+.category-list {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin-top: 0;
+    flex-wrap: wrap;
+    gap: 1rem;
+
+    .listed-category {
+        a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: inherit;
+            .count {
+                @extend .muted;
+                padding-left: .2rem;
+                font-size: .75rem;
+                font-weight: bold;
+            }
+        }
+
+    }
+}
+
 .user-ad-list {
+    margin-top: 0;
     .card {
         background-color: var(--bg-color-dark);
     }

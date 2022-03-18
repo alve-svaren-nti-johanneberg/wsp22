@@ -98,8 +98,11 @@ post '/ad/new' do
     end
   end
 
-  ad = Ad.create(params[:title], params[:content], params[:price].to_i, current_user.id, postal_code, new_name)
-  redirect "/ad/#{ad}"
+  ad = Ad.create(
+    params[:title], params[:content], params[:price].to_i,
+    current_user.id, postal_code, new_name, params[:categories]
+  )
+  redirect "/ad/#{ad.id}"
 end
 
 get '/categories' do

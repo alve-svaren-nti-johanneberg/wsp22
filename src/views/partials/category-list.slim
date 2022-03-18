@@ -1,0 +1,6 @@
+ul.category-list
+  - categories.each do |category|
+    li.listed-category title="Det finns #{category.ads.count} annons#{category.ads.count > 1 ? 'er' : ''} i denna kategorien"
+      a href="/category/#{category.slug}" 
+        | #{category.name}
+        span.count = " (#{category.ads.count})"

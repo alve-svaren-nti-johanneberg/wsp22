@@ -12,6 +12,4 @@ article.card
       p.no-ads
         | Användaren har inga aktiva annonser
     - else
-      ul.user-ad-list
-        - user.ads.each do |ad|
-          == slim :'partials/listed-ad', locals: { ad: ad }
+      == slim :'partials/ad-list', locals: { ads: user.ads, user_page: true }
