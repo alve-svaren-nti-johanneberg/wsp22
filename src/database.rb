@@ -100,21 +100,23 @@ class User < DbModel
   end
 
   def conversations
-    as_seller = []
-    as_customer = []
-    db.execute(
-      "SELECT * FROM #{Message.table_name} WHERE customer_id = ? OR ad_id IN (SELECT id FROM #{Ad.table_name} WHERE seller_id = ?)", @id, @id
-    ).map do |message|
-      message = Message.new(message)
-      unless as_seller.include?([message.ad.id, message.customer.id]) || as_customer.include?(message.ad.id)
-        if message.customer == self
-          as_customer << message.ad.id
-        else
-          as_seller << [message.ad.id, message.customer.id]
+    @conversations ||= begin
+      as_seller = []
+      as_customer = []
+      db.execute(
+        "SELECT * FROM #{Message.table_name} WHERE customer_id = ? OR ad_id IN (SELECT id FROM #{Ad.table_name} WHERE seller_id = ?)", @id, @id
+      ).map do |message|
+        message = Message.new(message)
+        unless as_seller.include?([message.ad.id, message.customer.id]) || as_customer.include?(message.ad.id)
+          if message.customer == self
+            as_customer << message.ad.id
+          else
+            as_seller << [message.ad.id, message.customer.id]
+          end
         end
       end
+      { seller: as_seller, customer: as_customer }
     end
-    { seller: as_seller, customer: as_customer }
   end
 end
 
@@ -185,8 +187,14 @@ class Ad < DbModel
   end
 
   def categories
-    data = db.execute("SELECT * FROM #{AdCategory.table_name} WHERE ad_id = ?", @id)
-    data.map { |category| Category.find_by_id(category['category_id']) }
+    @categories ||= begin
+      data = db.execute("SELECT * FROM #{AdCategory.table_name} WHERE ad_id = ?", @id)
+      data.map { |category| Category.find_by_id(category['category_id']) }
+    end
+  end
+
+  def add_category(category_id)
+    db.execute("INSERT INTO #{AdCategory.table_name} (ad_id, category_id) VALUES (?, ?)", @id, category_id)
   end
 end
 
@@ -305,8 +313,10 @@ class Category < DbModel
   end
 
   def ads
-    data = db.execute("SELECT * FROM #{AdCategory.table_name} WHERE category_id = ?", @id)
-    data.map { |ad| Ad.find_by_id(ad['ad_id']) }
+    @ads ||= begin
+      data = db.execute("SELECT * FROM #{AdCategory.table_name} WHERE category_id = ?", @id)
+      data.map { |ad| Ad.find_by_id(ad['ad_id']) }
+    end
   end
 
   def self.create(name)
