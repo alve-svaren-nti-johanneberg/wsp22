@@ -13,9 +13,9 @@ article.card
       textarea.flat name="content" rows="8" placeholder="Beskrivning av vara"
       label
         | Kategorier
-        select multiple="" name="categories[]"
+        select.flat.category-select multiple="" name="categories[]"
           - Category.all.each do |category|
-              option value="#{category.id}" = category.name
+              option value="#{category.id}" #{category.name} (#{category.ads.count})
       input.full-width type="submit" value="Skapa annons"
 
 javascript: 

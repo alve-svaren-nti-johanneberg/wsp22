@@ -424,6 +424,7 @@ input[type="text"],
 input[type="password"],
 input[type="email"],
 input[type="number"],
+select,
 textarea {
     appearance: none;
     width: 100%;
@@ -485,10 +486,14 @@ textarea {
     color: unset;
 }
 
-textarea {
+textarea, .category-select {
     resize: vertical;
     font-family: unset;
     min-height: 4em;
+}
+
+.category-select {
+    height: 10rem;
 }
 
 .limit-width {
