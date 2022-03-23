@@ -22,3 +22,6 @@ gem "sassc", "~> 2.4"
 gem "irb", "~> 1.4"
 
 gem "rmagick", "~> 4.2"
+
+gem "rack-livereload", "~> 0.3.17"
+gem "guard-livereload", "~> 2.5"

@@ -6,8 +6,15 @@ require 'slim'
 require 'sassc'
 require 'securerandom'
 require 'rmagick'
+require 'rack-livereload'
 require_relative 'database'
 require_relative 'utils'
+
+use Rack::LiveReload, source: :vendored
+
+Thread.new do
+  system('bundle exec guard')
+end
 
 enable :sessions
 
@@ -106,7 +113,7 @@ post '/ad/new' do
 end
 
 get '/categories' do
-  slim :'categories'
+  slim :categories
 end
 
 post '/categories' do
