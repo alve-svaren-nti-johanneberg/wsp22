@@ -47,7 +47,7 @@ def postal_codes
   end
 end
 
-def distance(lat1, lon1, lat2, lon2)
+def get_distance(lat1, lon1, lat2, lon2)
   rad_per_deg = Math::PI / 180
 
   earth_radius = 6371
@@ -68,5 +68,22 @@ def postal_code_distance(code1, code2)
   lat1, lon1 = *code1_data['coords']
   lat2, lon2 = *code2_data['coords']
 
-  distance(lat1, lon1, lat2, lon2)
+  get_distance(lat1, lon1, lat2, lon2)
+end
+
+def human_readable_distance(ad)
+  distance = postal_code_distance(current_user.postal_code, ad.postal_code) / 1000
+  text = "#{group_number(distance.to_i)} km"
+  text = 'Inom 2 km' if distance < 2
+
+  text
+end
+
+def ad_position(ad)
+  place = postal_codes[ad.postal_code]
+  text = "#{place['place_name']}, #{place['admin_name1']}"
+  text = place['place_name'] if place['admin_name1'] == place['place_name']
+  return "#{text} · #{human_readable_distance(ad)}" if current_user
+
+  text
 end

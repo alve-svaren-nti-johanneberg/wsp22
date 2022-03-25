@@ -9,7 +9,7 @@ article.card
       p.seller-info
         | säljs av 
         a href="/user/#{ad.seller.id}" = ad.seller.name
-        |  · #{ad.postal_code}
+        |  · #{ad_position(ad)}
     section.description
       - ad.content.split("\n").each do |paragraph|
         p = paragraph

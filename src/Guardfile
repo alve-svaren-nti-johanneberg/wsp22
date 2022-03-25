@@ -1,4 +1,5 @@
 guard 'livereload' do
   watch(%r{views/.+\.(slim|scss)$})
   watch(%r{public/*})
+  watch(%r{.+\.rb$})
 end

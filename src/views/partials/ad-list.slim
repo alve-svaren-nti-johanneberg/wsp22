@@ -10,4 +10,4 @@ ul.ad-list class=((defined? user_page) && user_page ? "user-ad-list" : "")
                 div.card-title
                   h1 = ad.title
                   span.price = get_human_readable_price(ad.price)
-              p.info = ad.postal_code
+              p.info = ad_position(ad)
