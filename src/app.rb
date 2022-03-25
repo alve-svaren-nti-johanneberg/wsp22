@@ -26,16 +26,16 @@ auth_paths = %w[/login /register /auth-needed]
 
 def forbidden
   status 403
-  slim :'403'
+  slim :'generic/403'
 end
 
 def unauthorized
   status 401
-  slim :'401'
+  slim :'generic/401'
 end
 
 not_found do
-  slim :'404'
+  slim :'generic/404'
 end
 
 before do
@@ -113,7 +113,7 @@ post '/ad/new' do
 end
 
 get '/categories' do
-  slim :categories
+  slim :'ad/categories'
 end
 
 post '/categories' do
@@ -151,7 +151,7 @@ post '/ad/:id/delete' do
 end
 
 get '/login' do
-  slim :login
+  slim :'user/login'
 end
 
 get '/logout' do
@@ -160,19 +160,19 @@ get '/logout' do
 end
 
 get '/register' do
-  slim :register
+  slim :'user/register'
 end
 
 get '/search' do
   ads = Ad.search((params[:query] || '').split(' '))
-  slim :search, locals: { ads: ads }
+  slim :'ad/search', locals: { ads: ads }
 end
 
 get '/user/:id' do
   user = User.find_by_id(params[:id])
   raise Sinatra::NotFound unless user
 
-  slim :profile, locals: { user: user }
+  slim :'user/profile', locals: { user: user }
 end
 
 get '/message/:id' do
@@ -180,7 +180,7 @@ get '/message/:id' do
   raise Sinatra::NotFound unless ad
   return forbidden unless ad.seller != current_user
 
-  slim :messages, locals: { to: ad.seller, ad: ad, messages: Message.conversation(current_user, ad) }
+  slim :'user/messages', locals: { to: ad.seller, ad: ad, messages: Message.conversation(current_user, ad) }
 end
 
 post '/message/:id' do
@@ -210,11 +210,11 @@ get '/message/:id/:customer' do
   return forbidden unless ad.seller == current_user
   return forbidden if customer == current_user
 
-  slim :messages, locals: { to: customer, ad: ad, messages: Message.conversation(customer, ad) }
+  slim :'user/messages', locals: { to: customer, ad: ad, messages: Message.conversation(customer, ad) }
 end
 
 get '/messages' do
-  slim :messages, locals: { ad: nil }
+  slim :'user/messages', locals: { ad: nil }
 end
 
 post '/register' do

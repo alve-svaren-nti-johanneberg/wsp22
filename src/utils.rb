@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require 'sinatra'
+require 'csv'
 require_relative 'database'
 
 def temp_session(symbol)
@@ -31,4 +32,41 @@ def get_banner_date(time)
   days = %w[Söndag Måndag Tisdag Onsdag Torsdag Fredag Lördag]
 
   time.strftime("#{days[time.wday]} %-d #{months[time.month - 1]} %Y")
+end
+
+def postal_codes
+  @postal_codes ||= begin
+    codes = {}
+    csv_codes = CSV.read('postal_codes.csv', headers: true)
+    csv_codes.each do |row|
+      codes[row['postal_code']] = row.to_h
+      current = codes[row['postal_code']]
+      current['coords'] = [current['latitude'].to_f, current['longitude'].to_f]
+    end
+    codes
+  end
+end
+
+def distance(lat1, lon1, lat2, lon2)
+  rad_per_deg = Math::PI / 180
+
+  earth_radius = 6371
+
+  part1 = Math.sin(((lat2 - lat1) * rad_per_deg) / 2)**2
+  part2 = Math.sin(((lon2 - lon1) * rad_per_deg) / 2)**2 * Math.cos(lat1 * rad_per_deg) * Math.cos(lat2 * rad_per_deg)
+
+  haversine = part1 + part2
+
+  c = 2 * Math.asin(Math.sqrt(haversine))
+
+  earth_radius * c * 1000
+end
+
+def postal_code_distance(code1, code2)
+  code1_data = postal_codes[code1]
+  code2_data = postal_codes[code2]
+  lat1, lon1 = *code1_data['coords']
+  lat2, lon2 = *code2_data['coords']
+
+  distance(lat1, lon1, lat2, lon2)
 end

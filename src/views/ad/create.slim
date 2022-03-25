@@ -23,5 +23,5 @@ javascript:
   const updatePicture = () => {
     document.querySelector("#preview-picture").src = URL.createObjectURL(cover.files[0])
   }
-  cover.addEventListener("input", updatePicture);
+  cover.addEventListener("change", updatePicture);
   updatePicture();
