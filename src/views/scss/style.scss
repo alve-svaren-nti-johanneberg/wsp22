@@ -441,6 +441,10 @@ form.wide-form {
     }
 }
 
+input {
+    font-family: inherit;
+}
+
 input[type="text"],
 input[type="password"],
 input[type="email"],
@@ -535,6 +539,7 @@ input[type="submit"] {
     font-size: unset;
     cursor: pointer;
     line-height: inherit;
+    display: inline-block;
 
     &:not(.flat) {
         background-color: var(--accent-color);

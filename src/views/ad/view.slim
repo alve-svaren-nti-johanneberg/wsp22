@@ -19,6 +19,8 @@ article.card
         == slim :'partials/category-list', locals: { categories: ad.categories }
     - if ad.seller == current_user || current_user&.admin
       form action="/ad/#{ad.id}/delete" method="post"
+        - if ad.seller == current_user
+          a.button href="/ad/#{ad.id}/edit" Redigera annons
         input.destructive type="submit" value="Ta bort annons"
     - unless ad.seller == current_user
       a.button.full-width.message-icon-prefix href="/message/#{ad.id}" Skicka meddelande

@@ -66,7 +66,7 @@ get '/style.css' do
 end
 
 get '/ad/new' do
-  slim :'ad/create'
+  slim :'ad/edit_or_create'
 end
 
 post '/ad/new' do
@@ -80,6 +80,7 @@ post '/ad/new' do
   error = 'Du måste ange en beskrivning' if params[:content].empty?
   error = 'Du måste ange en titel' if params[:title].empty?
   error = 'Titeln får inte vara längre än 64 tecken' if params[:title].length > 64
+  error = 'Postnummret måste vara ett riktigt postnummer' if postal_codes[postal_code.to_s].nil?
 
   if error
     session[:old_data] = params
@@ -109,6 +110,59 @@ post '/ad/new' do
     params[:title], params[:content], params[:price].to_i,
     current_user.id, postal_code, new_name, params[:categories]
   )
+  redirect "/ad/#{ad.id}"
+end
+
+get '/ad/:id/edit' do
+  ad = Ad.find_by_id(params[:id])
+  slim :'ad/edit_or_create', locals: { ad: ad }
+end
+
+post '/ad/:id/update' do
+  ad = Ad.find_by_id(params[:id])
+
+  error = nil
+
+  postal_code = params[:postal_code].delete(' ').delete('-').to_i
+  error = 'Postnummret måste vara 5 siffror' unless postal_code.to_s.length == 5
+  error = 'Priset måste vara positivt' if params[:price].to_i.negative?
+  error = 'Priset får inte vara mer än 1000 miljarder kr' if params[:price].to_i > 1e12
+  error = 'Du måste ange ett postnummer' if params[:postal_code].empty?
+  error = 'Du måste ange en beskrivning' if params[:content].empty?
+  error = 'Du måste ange en titel' if params[:title].empty?
+  error = 'Titeln får inte vara längre än 64 tecken' if params[:title].length > 64
+  error = 'Postnummret måste vara ett riktigt postnummer' if postal_codes[postal_code.to_s].nil?
+
+  if error
+    session[:old_data] = params
+    session[:form_error] = error
+    return redirect '/ad/new'
+  end
+
+  new_name = nil
+
+  if params[:cover]
+    File.delete("userimgs/#{ad.image_name}") if ad.image_name
+    imagefile = params[:cover][:tempfile]
+    # filename = params[:cover][:filename]
+    # extension = filename.split('.').last
+    new_name = "#{SecureRandom.uuid}.jpg"
+    data = imagefile.read
+
+    new_file_name = "userimgs/#{new_name}"
+
+    image = Magick::Image.from_blob(data).first
+    image.format = 'jpeg'
+    File.open(new_file_name, 'wb') do |f|
+      image.resize_to_fit(720 * 4, 320 * 4).write(f) { self.quality = 70 }
+    end
+  end
+
+  ad.update(
+    params[:title], params[:content], params[:price].to_i,
+    current_user.id, postal_code, new_name || ad.image_name, params[:categories]
+  )
+
   redirect "/ad/#{ad.id}"
 end
 

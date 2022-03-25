@@ -167,13 +167,37 @@ class Ad < DbModel
   # @param categories [Array<Integer>]
   def self.create(title, content, price, seller_id, postal_code, image_name, categories)
     session = db
-    session.execute("INSERT INTO #{table_name} (title, content, price, seller_id, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
+    session.execute("INSERT INTO #{table_name}
+      (title, content, price, seller_id, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     title, content, price, seller_id, postal_code, image_name, Time.now.to_i)
     ad = find_by_id(session.last_insert_row_id)
     categories.each do |category_id|
       ad.add_category(category_id)
     end
     ad
+  end
+
+  # @param title [String]
+  # @param content [String]
+  # @param price [Integer]
+  # @param seller_id [Integer]
+  # @param postal_code [String, Integer]
+  # @param categories [Array<Integer>]
+  def update(title, content, price, seller_id, postal_code, image_name, categories)
+    session = db
+    session.execute("UPDATE #{table_name} SET
+      title = ?,
+      content = ?,
+      price = ?,
+      seller_id = ?,
+      postal_code = ?,
+      image_name = ?,
+      created_at = ? WHERE id = ?", title, content, price, seller_id, postal_code, image_name, Time.now.to_i, id)
+
+    clear_categories
+    categories.each do |category_id|
+      add_category(category_id)
+    end
   end
 
   def self.search(words)
@@ -204,6 +228,10 @@ class Ad < DbModel
 
   def add_category(category_id)
     db.execute("INSERT INTO #{AdCategory.table_name} (ad_id, category_id) VALUES (?, ?)", @id, category_id)
+  end
+
+  def clear_categories
+    db.execute("DELETE FROM #{AdCategory.table_name} WHERE ad_id = ?", @id)
   end
 end
 

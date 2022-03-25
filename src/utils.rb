@@ -81,6 +81,8 @@ end
 
 def ad_position(ad)
   place = postal_codes[ad.postal_code]
+  return "Okänd plats (#{ad.postal_code})" unless place
+
   text = "#{place['place_name']}, #{place['admin_name1']}"
   text = place['place_name'] if place['admin_name1'] == place['place_name']
   return "#{text} · #{human_readable_distance(ad)}" if current_user
