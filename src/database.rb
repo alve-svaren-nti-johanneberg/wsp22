@@ -5,7 +5,7 @@ require 'sqlite3'
 require_relative 'utils'
 
 def db
-  tmp = SQLite3::Database.new 'data.db'
+  tmp = SQLite3::Database.new File.join(File.dirname(__FILE__), './data.db')
   tmp.results_as_hash = true
   tmp
 end
@@ -218,7 +218,7 @@ class Ad < DbModel
   def delete
     db.execute("DELETE FROM #{table_name} WHERE id = ?", @id)
     db.execute("DELETE FROM #{Message.table_name} WHERE ad_id = ?", @id)
-    File.delete("userimgs/#{@image_name}") if @image_name
+    File.delete(File.join(File.dirname(__FILE__), "userimgs/#{@image_name}")) if @image_name
   end
 
   def categories

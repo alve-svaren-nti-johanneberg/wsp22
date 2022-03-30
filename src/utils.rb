@@ -38,7 +38,7 @@ end
 def postal_codes
   @postal_codes ||= begin
     codes = {}
-    csv_codes = CSV.read('postal_codes.csv', headers: true)
+    csv_codes = CSV.read(File.join(File.dirname(__FILE__), './postal_codes.csv'), headers: true)
     csv_codes.each do |row|
       codes[row['postal_code']] = row.to_h
       current = codes[row['postal_code']]

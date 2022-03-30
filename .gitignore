@@ -57,7 +57,7 @@ build-iPhoneSimulator/
 
 /.sass-cache/
 
-/data.db
-/data.db*
+src/data.db
+src/data.db*
 
-/userimgs/
+src/userimgs/

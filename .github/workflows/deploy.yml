@@ -22,7 +22,7 @@ jobs:
                   port: 2022
                   username: "github.${{ secrets.pterodactyl_server_id }}"
                   password: ${{ secrets.password }}
-                  localPath: "./src/"
+                  localPath: "./"
                   remotePath: "./"
             - name: Send notice in console showing that github actions is restarting the container
               run: 'curl -H ''Authorization: Bearer ${{ secrets.pterodactyl_api_token }}'' -H ''Accept: application/json'' -H ''Content-Type: application/json'' -d ''{"command": "Github Actions finished, restarting"}'' ${{ secrets.pterodactyl_app_url }}/api/client/servers/${{ secrets.pterodactyl_server_id }}/command'

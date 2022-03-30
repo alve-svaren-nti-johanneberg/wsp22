@@ -28,3 +28,5 @@ gem "guard-livereload", "~> 2.5"
 
 gem "yard", "~> 0.9.27"
 gem "yard-sinatra", github: "chrisb/yard-sinatra"
+
+gem "rdoc", "~> 6.4"

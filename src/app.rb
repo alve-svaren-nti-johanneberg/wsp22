@@ -97,7 +97,7 @@ post '/ad/new' do
     new_name = "#{SecureRandom.uuid}.jpg"
     data = imagefile.read
 
-    new_file_name = "userimgs/#{new_name}"
+    new_file_name = File.join(File.dirname(__FILE__), "userimgs/#{new_name}")
 
     image = Magick::Image.from_blob(data).first
     image.format = 'jpeg'
@@ -185,7 +185,7 @@ get '/ad/:id' do
 end
 
 get '/userimg/:filename' do
-  send_file "userimgs/#{params[:filename]}"
+  send_file File.join(File.dirname(__FILE__), "userimgs/#{params[:filename]}")
 end
 
 get '/ad/:id/edit' do
