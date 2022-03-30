@@ -108,7 +108,7 @@ post '/ad/new' do
 
   ad = Ad.create(
     params[:title], params[:content], params[:price].to_i,
-    current_user.id, postal_code, new_name, params[:categories]
+    current_user.id, postal_code, new_name, params[:categories] || []
   )
   redirect "/ad/#{ad.id}"
 end
