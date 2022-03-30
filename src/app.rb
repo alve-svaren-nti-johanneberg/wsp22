@@ -7,7 +7,7 @@ require 'sassc'
 require 'securerandom'
 require 'rmagick'
 require 'rack-livereload'
-require_relative 'database'
+require_relative 'models'
 require_relative 'utils'
 
 use Rack::LiveReload, source: :vendored
@@ -18,7 +18,7 @@ end
 
 enable :sessions
 
-also_reload 'database.rb', 'utils.rb'
+also_reload 'models.rb', 'utils.rb'
 
 auth_needed = %w[/ad/new /message]
 ignored_paths = %w[/style.css /favicon.ico /auth-needed]

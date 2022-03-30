@@ -2,7 +2,7 @@
 
 require 'sinatra'
 require 'csv'
-require_relative 'database'
+require_relative 'models'
 
 def temp_session(symbol)
   value = session[symbol]
