@@ -1,1 +1,1 @@
-./**/*.rb --exclude ./vendor/**/*.rb
+src/**/*.rb --plugin yard-sinatra
