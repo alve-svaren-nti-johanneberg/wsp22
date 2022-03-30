@@ -1,5 +1,5 @@
 ruby:
-  ad = nil if !defined? ad
+  ad = nil unless defined? ad
 
 article.card
   form action="#{ad ? "/ad/#{ad.id}/update" : "/ad/new"}" method="post" enctype="multipart/form-data"

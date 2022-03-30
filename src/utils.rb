@@ -10,6 +10,7 @@ def temp_session(symbol)
   value
 end
 
+# @return [User]
 def current_user
   User.find_by_id(session[:user_id])
 end
@@ -65,6 +66,7 @@ end
 def postal_code_distance(code1, code2)
   code1_data = postal_codes[code1]
   code2_data = postal_codes[code2]
+  return nil unless code1_data && code2_data
   lat1, lon1 = *code1_data['coords']
   lat2, lon2 = *code2_data['coords']
 

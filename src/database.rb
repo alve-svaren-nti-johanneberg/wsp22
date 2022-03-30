@@ -33,6 +33,7 @@ class DbModel
 
   def ==(other)
     return false if other.nil?
+    return @id == other if other.is_a?(Numeric)
 
     @id == other.id
   end
@@ -200,6 +201,7 @@ class Ad < DbModel
     end
   end
 
+  # @return [Array<Ad>]
   def self.search(words)
     query = words.empty? && "SELECT * FROM #{table_name}"
     wildcards = words.map do

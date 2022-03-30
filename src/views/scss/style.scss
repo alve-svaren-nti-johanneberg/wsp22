@@ -312,6 +312,23 @@ form.wide-form {
     width: 100%;
 }
 
+.search-container {
+    display: flex;
+    @include limit-width;
+
+    .filters {
+        width: 25rem;
+
+        .row {
+            display: flex;
+        }
+    }
+
+    .results {
+        width: calc(100% - 25rem);
+    }
+}
+
 .messages-container {
     display: flex;
     height: calc(100vh - #{$nav-height});
@@ -530,22 +547,26 @@ button,
 input[type="submit"] {
     @include opacity-animated;
     text-decoration: none;
-    color: var(--accent-text-color);
-
-    padding: 0.5rem 0.8rem;
-    border-radius: 0.33rem;
     text-align: center;
     border: none;
     font-size: unset;
     cursor: pointer;
     line-height: inherit;
     display: inline-block;
-
-    &:not(.flat) {
-        background-color: var(--accent-color);
+    background-color: transparent;
+    color: var(--accent-light-text-color);
+    
+    &:not(.secondary) {
+        color: var(--accent-text-color);
+        padding: 0.5rem 0.8rem;
+        border-radius: 0.33rem;
+        &:not(.flat) {
+            background-color: var(--accent-color);
+        }
+    
+        &.destructive {
+            background-color: var(--red);
+        }
     }
 
-    &.destructive {
-        background-color: var(--red);
-    }
 }

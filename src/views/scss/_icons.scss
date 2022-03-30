@@ -15,3 +15,8 @@
     @extend .fa;
     content: "#{$fa-var-comment} ";
 }
+
+.filter-icon-prefix::before {
+    @extend .fa;
+    content: "#{$fa-var-filter} ";
+}

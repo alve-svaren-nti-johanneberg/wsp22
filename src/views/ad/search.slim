@@ -1,5 +1,62 @@
-section.limit-width
-  form.full-width action="/search" method="get"
-    input.full-width#search-input name="query" type="text" value="#{params[:query]}" placeholder="Sök vara"
-  p = "#{ads.count} annons#{'er' unless ads.count == 1} matchar sökningen"
-  == slim :'partials/ad-list', locals: { ads: ads }
+ruby:
+  max_price = 1e12.to_i
+div.search-container
+  section.filters
+    form#filter-form action="/search" method="get"
+      section
+        header.bold Pris
+        div.row
+          input.flat type="number" name="min_price" placeholder="Från (kr)" min="0" max="#{max_price}" value="#{params[:min_price]}"
+          input.flat type="number" name="max_price" placeholder="Till (kr)" min="0" max="#{max_price}" value="#{params[:max_price]}"
+      section
+        header.bold Avstånd
+        div.row
+          label
+            input#distance-slider data-default_value="100" type="range" name="max_distance" min="5" max="100" value="#{params[:max_distance] || 100}" step="5"
+            span#distance-value
+      section
+        header.bold Kategorier
+        select.flat.category-select multiple="" name="categories[]"
+          - Category.all.each do |category|
+              option value="#{category.id}" selected=("selected" if params[:categories]&.include? category.id.to_s) #{category.name} (#{category.ads.count})
+
+      button.full-width.filter-icon-prefix type="submit" Filtrera
+      button.secondary type="reset" Rensa filter
+
+  section.results
+    form.full-width action="/search" method="get"
+      input.full-width#search-input name="query" type="text" value="#{params[:query]}" placeholder="Sök vara"
+    p = "#{ads.count} annons#{'er' unless ads.count == 1} matchar sökningen"
+    == slim :'partials/ad-list', locals: { ads: ads }
+
+javascript:
+    const updateSlider = () => {
+      let slider = document.querySelector("#distance-slider");
+      let value = slider.valueAsNumber;
+      if (value == slider.max) {
+        value = "Alla avstånd";
+      }
+      document.querySelector("#distance-value").innerHTML = typeof value === 'string' ? value : `&lt; ${value} km`;
+    }
+    document.querySelector("#distance-slider").addEventListener("input", updateSlider);
+    updateSlider();
+
+    document.querySelector("#filter-form").addEventListener("reset", e => {
+        e.preventDefault();
+        const form = document.querySelector("#filter-form");
+        form.querySelectorAll("*").forEach(el => {
+          if (el.dataset.default_value) {
+            el.value = el.dataset.default_value;
+          } else {
+            el.value = "";
+          }
+        });
+
+        form.querySelectorAll("option").forEach(el => {
+          el.selected = false;
+        });
+
+        updateSlider();
+        form.submit();
+
+    })
