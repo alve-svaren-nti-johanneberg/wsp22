@@ -8,6 +8,8 @@ require 'rmagick'
 require_relative 'models'
 require_relative 'utils'
 
+include Utils
+
 if settings.development?
   require 'rack-livereload'
   require 'sinatra/reloader'
@@ -21,7 +23,6 @@ if settings.development?
 end
 
 enable :sessions
-
 
 auth_needed = %w[/ad/new /message]
 ignored_paths = %w[/style.css /favicon.ico /auth-needed]
@@ -41,6 +42,7 @@ not_found do
   slim :'generic/404'
 end
 
+# Make sure user is allowed to see page if not logged in
 before do
   status temp_session(:status_code) if session[:status_code]
   return if ignored_paths.include? request.path_info
@@ -59,19 +61,30 @@ get '/' do
   slim :index
 end
 
+# Show page prompting user to login if authentication is needed
 get '/auth-needed' do
   unauthorized
 end
 
-# Generate and serve project sass
+# Compile and serve project sass
 get '/style.css' do
   scss :'scss/style', style: :compressed
 end
 
+# Shows the form to create a new ad
 get '/ad/new' do
   slim :'ad/edit_or_create'
 end
 
+# Create a new ad
+# @param title [String] The title of the ad
+# @param content [String] The body of the ad
+# @param price [Integer] The price of the ad
+# @param postal_code [String] The postal code for the ad
+# @param cover [Tempfile] The cover image of the ad
+# @param categories [Array<Category>] The categories of the ad
+#
+# @see Ad#create
 post '/ad/new' do
   error = nil
 
@@ -116,11 +129,23 @@ post '/ad/new' do
   redirect "/ad/#{ad.id}"
 end
 
+# Shows for to edit an ad
+# @param :id [Integer] The id of the ad to edit
 get '/ad/:id/edit' do
   ad = Ad.find_by_id(params[:id])
   slim :'ad/edit_or_create', locals: { ad: ad }
 end
 
+# Edit an ad
+# @param :id [Integer] The id of the ad to edit
+# @param title [String] The title of the ad
+# @param content [String] The body of the ad
+# @param price [Integer] The price of the ad
+# @param postal_code [String] The postal code for the ad
+# @param cover [Tempfile] The cover image of the ad
+# @param categories [Array<Category>] The categories of the ad
+#
+# @see Ad#update
 post '/ad/:id/update' do
   ad = Ad.find_by_id(params[:id])
 
@@ -169,10 +194,15 @@ post '/ad/:id/update' do
   redirect "/ad/#{ad.id}"
 end
 
+# Shows all availible categories, and allows admins to create new categories
 get '/categories' do
   slim :'ad/categories'
 end
 
+# Create a new category if the user is an admin
+# @param name [String] The name of the category
+#
+# @see Category#create
 post '/categories' do
   return unauthorized unless current_user.admin
 
@@ -180,6 +210,8 @@ post '/categories' do
   redirect '/categories'
 end
 
+# Shows an ad
+# @param :id [Integer] The id of the ad to show
 get '/ad/:id' do
   ad = Ad.find_by_id(params[:id])
   raise Sinatra::NotFound unless ad
@@ -187,14 +219,14 @@ get '/ad/:id' do
   slim :'ad/view', locals: { ad: ad }
 end
 
+# Fetches an image for an ad
+# @param :filename [String] The filename for the processed ad image
 get '/userimg/:filename' do
   send_file File.join(File.dirname(__FILE__), "userimgs/#{params[:filename]}")
 end
 
-get '/ad/:id/edit' do
-  slim :'ad/update'
-end
-
+# Deletes an ad
+# @param :id [String] The id of the ad to delete
 post '/ad/:id/delete' do
   ad = Ad.find_by_id(params[:id])
   raise Sinatra::NotFound unless ad
@@ -207,19 +239,34 @@ post '/ad/:id/delete' do
   redirect '/'
 end
 
+# Shows the login form
 get '/login' do
+  return redirect '/' if current_user
+
   slim :'user/login'
 end
 
+# Logs out a user
 get '/logout' do
   session.clear
   redirect '/'
 end
 
+# Shows the form to register a new user
 get '/register' do
+  return redirect '/' if current_user
+
   slim :'user/register'
 end
 
+# Searches for ads according to the specified filters
+# @param query [String] The query to search for
+# @param categories [Array<Integer>] The categories to search for
+# @param min_price [Integer] The minimum price to search for
+# @param max_price [Integer] The maximum price to search for
+# @param max_distance [Integer] The maximum distance to search for
+#
+# @see Ad#search
 get '/search' do
   ads = Ad.search((params[:query] || '').split(' '))
   p params
@@ -227,8 +274,15 @@ get '/search' do
     filters = []
     filters << (ad.price <= params[:max_price].to_i if params[:max_price] && !params[:max_price].empty?)
     filters << (ad.price >= params[:min_price].to_i if params[:min_price] && !params[:min_price].empty?)
-    filters << (((params[:categories].all? { |category_id| ad.categories.include?(category_id.to_i) }) if params[:categories]))
-    filters << ((postal_code_distance(ad.postal_code, current_user.postal_code) || 0) <= params[:max_distance].to_i if params[:max_distance] && !params[:max_distance].to_i == 100)
+    filters << ((if params[:categories]
+                   (params[:categories].all? do |category_id|
+                      ad.categories.include?(category_id.to_i)
+                    end)
+                 end))
+    filters << (if params[:max_distance] && !params[:max_distance].to_i == 100
+                  (postal_code_distance(ad.postal_code,
+                                        current_user.postal_code) || 0) <= params[:max_distance].to_i
+                end)
     filters.reject!(&:nil?)
     p filters
     filters.all?
@@ -236,6 +290,8 @@ get '/search' do
   slim :'ad/search', locals: { ads: ads }
 end
 
+# Shows a user's profile page
+# @param :id [String] The id of the user to show
 get '/user/:id' do
   user = User.find_by_id(params[:id])
   raise Sinatra::NotFound unless user
@@ -243,6 +299,8 @@ get '/user/:id' do
   slim :'user/profile', locals: { user: user }
 end
 
+# Shows the conversation between two users, the seller of an ad and the current_user
+# @param :id [Integer] The id of the ad to show the conversation with
 get '/message/:id' do
   ad = Ad.find_by_id(params[:id])
   raise Sinatra::NotFound unless ad
@@ -251,6 +309,21 @@ get '/message/:id' do
   slim :'user/messages', locals: { to: ad.seller, ad: ad, messages: Message.conversation(current_user, ad) }
 end
 
+# Shows the conversation between two users, the ad for which the conversation takes place and a customer
+# @param :id [Integer] The id of the ad to show the conversation with
+# @param :customer [Integer] The id of the customer of the conversation
+get '/message/:id/:customer' do
+  customer = User.find_by_id(params[:customer])
+  ad = Ad.find_by_id(params[:id])
+  raise Sinatra::NotFound unless ad && customer
+  return forbidden unless ad.seller == current_user
+  return forbidden if customer == current_user
+
+  slim :'user/messages', locals: { to: customer, ad: ad, messages: Message.conversation(customer, ad) }
+end
+
+# Sends a message to the seller of an ad
+# @param :id [Integer] The id of the ad to send the message to the seller of
 post '/message/:id' do
   ad = Ad.find_by_id(params[:id])
   raise Sinatra::NotFound unless ad
@@ -260,6 +333,9 @@ post '/message/:id' do
   redirect "/message/#{ad.id}"
 end
 
+# Sends a message to a user as the seller of an ad
+# @param :id [Integer] The id of the ad to send the message from
+# @param :customer [Integer] The id of the user to send the message to
 post '/message/:id/:customer' do
   customer = User.find_by_id(params[:customer])
   ad = Ad.find_by_id(params[:id])
@@ -271,20 +347,19 @@ post '/message/:id/:customer' do
   redirect "/message/#{ad.id}/#{customer.id}"
 end
 
-get '/message/:id/:customer' do
-  customer = User.find_by_id(params[:customer])
-  ad = Ad.find_by_id(params[:id])
-  raise Sinatra::NotFound unless ad && customer
-  return forbidden unless ad.seller == current_user
-  return forbidden if customer == current_user
-
-  slim :'user/messages', locals: { to: customer, ad: ad, messages: Message.conversation(customer, ad) }
-end
-
+# Shows the base messages page, where the user can select which conversation to see
 get '/messages' do
   slim :'user/messages', locals: { ad: nil }
 end
 
+# Creates a user
+# @param name [String] The name of the user
+# @param email [String] The email of the user
+# @param password [String] The password of the user
+# @param 'confirm-password' [String] The password confirmation of the user
+# @param postal_code [String] The postal code of the user
+#
+# @see User#create
 post '/register' do
   error = nil
 
@@ -316,6 +391,9 @@ post '/register' do
   end
 end
 
+# Logs in a user
+# @param email [String] The email of the user
+# @param password [String] The password of the user
 post '/login' do
   user = User.find_by_email(params[:email])
   if user&.verify_password(params[:password])
