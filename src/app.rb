@@ -1,24 +1,27 @@
 # frozen_string_literal: true
 
 require 'sinatra'
-require 'sinatra/reloader'
 require 'slim'
 require 'sassc'
 require 'securerandom'
 require 'rmagick'
-require 'rack-livereload'
 require_relative 'models'
 require_relative 'utils'
 
-use Rack::LiveReload, source: :vendored
+if settings.development?
+  require 'rack-livereload'
+  require 'sinatra/reloader'
 
-Thread.new do
-  system('bundle exec guard')
+  use Rack::LiveReload, source: :vendored
+  Thread.new do
+    system('bundle exec guard')
+  end
+
+  also_reload 'models.rb', 'utils.rb'
 end
 
 enable :sessions
 
-also_reload 'models.rb', 'utils.rb'
 
 auth_needed = %w[/ad/new /message]
 ignored_paths = %w[/style.css /favicon.ico /auth-needed]
