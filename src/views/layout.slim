@@ -19,7 +19,7 @@ html lang="sv"
 
 
     title Blocketklon
-  body
+  body class=("fullscreen" if @fullscreen)
     nav#navbar
       div
         ul
@@ -28,6 +28,8 @@ html lang="sv"
               img.icon src="/img/icon.svg"
               | Blocketklon 
         ul
+          li
+            a href="/search" Sök
           - if current_user
             li
               a href="/messages" Meddelanden
@@ -47,3 +49,4 @@ html lang="sv"
     main ==yield
     - if session[:msg]
       p.msg onclick="this.remove()" title="Klicka för att dölja" class=(temp_session(:success) ? "success" : "") = temp_session :msg
+- @fullscreen = false

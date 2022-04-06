@@ -269,7 +269,6 @@ end
 # @see Ad#search
 get '/search' do
   ads = Ad.search((params[:query] || '').split(' '))
-  p params
   ads.keep_if do |ad|
     filters = []
     filters << (ad.price <= params[:max_price].to_i if params[:max_price] && !params[:max_price].empty?)
@@ -279,12 +278,10 @@ get '/search' do
                       ad.categories.include?(category_id.to_i)
                     end)
                  end))
-    filters << (if params[:max_distance] && !params[:max_distance].to_i == 100
-                  (postal_code_distance(ad.postal_code,
-                                        current_user.postal_code) || 0) <= params[:max_distance].to_i
-                end)
+    if params[:max_distance] && params[:max_distance].to_i != 100
+      filters << ((postal_code_distance(ad.postal_code, current_user.postal_code) || 100) <= params[:max_distance].to_i)
+    end
     filters.reject!(&:nil?)
-    p filters
     filters.all?
   end
   slim :'ad/search', locals: { ads: ads }

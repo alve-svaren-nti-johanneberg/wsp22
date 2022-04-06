@@ -179,6 +179,9 @@ h1 {
 
 body {
     background-color: var(--bg-color);
+    &:not(.fullscreen) {
+        margin-bottom: 5rem;
+    }
 }
 
 main > .card {
@@ -186,12 +189,12 @@ main > .card {
     margin-top: 5rem;
 }
 
-.card {
-    h1 {
-        font-size: 2em;
-        margin: 0;
-    }
+section h1, .card h1 {
+    font-size: 2em;
+    margin: 0;
+}
 
+.card {
     .card-title {
         display: flex;
         justify-content: space-between;
@@ -315,12 +318,28 @@ form.wide-form {
 .search-container {
     display: flex;
     @include limit-width;
+    gap: 4rem;
+
+    > * {
+        padding-top: 2rem;
+    }
 
     .filters {
         width: 25rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        padding: 1.5rem;
+        background-color: var(--bg-color-dark);
 
         .row {
             display: flex;
+        }
+
+        #filter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
         }
     }
 
@@ -540,6 +559,10 @@ textarea, .category-select {
 
 .limit-width {
     @include limit-width;
+}
+
+.no-underline {
+    text-decoration: none;
 }
 
 .button,

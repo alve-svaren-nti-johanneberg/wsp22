@@ -2,6 +2,7 @@ ruby:
   max_price = 1e12.to_i
 div.search-container
   section.filters
+    h1.center Filtrera resultat
     form#filter-form action="/search" method="get"
       section
         header.bold Pris
@@ -21,7 +22,7 @@ div.search-container
               option value="#{category.id}" selected=("selected" if params[:categories]&.include? category.id.to_s) #{category.name} (#{category.ads.count})
 
       button.full-width.filter-icon-prefix type="submit" Filtrera
-      button.secondary type="reset" Rensa filter
+      a.no-underline href="/search?query=#{params[:query]}" Rensa filter
 
   section.results
     form.full-width action="/search" method="get"
@@ -40,23 +41,3 @@ javascript:
     }
     document.querySelector("#distance-slider").addEventListener("input", updateSlider);
     updateSlider();
-
-    document.querySelector("#filter-form").addEventListener("reset", e => {
-        e.preventDefault();
-        const form = document.querySelector("#filter-form");
-        form.querySelectorAll("*").forEach(el => {
-          if (el.dataset.default_value) {
-            el.value = el.dataset.default_value;
-          } else {
-            el.value = "";
-          }
-        });
-
-        form.querySelectorAll("option").forEach(el => {
-          el.selected = false;
-        });
-
-        updateSlider();
-        form.submit();
-
-    })
