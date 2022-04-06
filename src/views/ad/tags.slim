@@ -1,0 +1,10 @@
+article.card
+  div.card-indent
+    h1 Taggar
+    p.error = temp_session :form_error
+    == slim :'partials/tag-list', locals: { tags: Tag.all }
+
+    - if current_user&.admin
+      form.wide-form.full-width action="/tags" method="post"
+        input type="text" name="name" placeholder="Namn"
+        input type="submit" value="Lägg till ny tagg"

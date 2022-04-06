@@ -15,10 +15,10 @@ article.card
         input.flat type="text" title="Postnummer, t.ex 12345" oninput="this.reportValidity()" pattern="[1-9]\d{4}" placeholder="Ange postnummer" value="#{ad&.postal_code || current_user.postal_code}" name="postal_code"
       textarea.flat name="content" rows="8" placeholder="Beskrivning av vara" = ad&.content
       label
-        | Kategorier
-        select.flat.category-select multiple="" name="categories[]"
-          - Category.all.each do |category|
-              option value="#{category.id}" selected=("selected" if ad&.categories&.include? category) #{category.name} (#{category.ads.count})
+        | Taggar
+        select.flat.tag-select multiple="" name="tags[]"
+          - Tag.all.each do |tag|
+              option value="#{tag.id}" selected=("selected" if ad&.tags&.include? tag) #{tag.name} (#{tag.ads.count})
       input.full-width type="submit" value="#{ad ? "Uppdatera annons" : "Skapa annons"}"
 
 javascript: 

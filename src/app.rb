@@ -82,7 +82,7 @@ end
 # @param price [Integer] The price of the ad
 # @param postal_code [String] The postal code for the ad
 # @param cover [Tempfile] The cover image of the ad
-# @param categories [Array<Category>] The categories of the ad
+# @param tags [Array<Tag>] The tags of the ad
 #
 # @see Ad#create
 post '/ad/new' do
@@ -124,7 +124,7 @@ post '/ad/new' do
 
   ad = Ad.create(
     params[:title], params[:content], params[:price].to_i,
-    current_user.id, postal_code, new_name, params[:categories] || []
+    current_user.id, postal_code, new_name, params[:tags] || []
   )
   redirect "/ad/#{ad.id}"
 end
@@ -143,7 +143,7 @@ end
 # @param price [Integer] The price of the ad
 # @param postal_code [String] The postal code for the ad
 # @param cover [Tempfile] The cover image of the ad
-# @param categories [Array<Category>] The categories of the ad
+# @param tags [Array<Tag>] The tags of the ad
 #
 # @see Ad#update
 post '/ad/:id/update' do
@@ -188,26 +188,26 @@ post '/ad/:id/update' do
 
   ad.update(
     params[:title], params[:content], params[:price].to_i,
-    current_user.id, postal_code, new_name || ad.image_name, params[:categories]
+    current_user.id, postal_code, new_name || ad.image_name, params[:tags]
   )
 
   redirect "/ad/#{ad.id}"
 end
 
-# Shows all availible categories, and allows admins to create new categories
-get '/categories' do
-  slim :'ad/categories'
+# Shows all availible tags, and allows admins to create new tags
+get '/tags' do
+  slim :'ad/tags'
 end
 
-# Create a new category if the user is an admin
-# @param name [String] The name of the category
+# Create a new tag if the user is an admin
+# @param name [String] The name of the tag
 #
-# @see Category#create
-post '/categories' do
+# @see Tag#create
+post '/tags' do
   return unauthorized unless current_user.admin
 
-  session[:form_error] = "Kategorin '#{params[:name]}' finns redan" unless Category.create(params[:name])
-  redirect '/categories'
+  session[:form_error] = "Taggen '#{params[:name]}' finns redan" unless Tag.create(params[:name])
+  redirect '/tags'
 end
 
 # Shows an ad
@@ -261,7 +261,7 @@ end
 
 # Searches for ads according to the specified filters
 # @param query [String] The query to search for
-# @param categories [Array<Integer>] The categories to search for
+# @param tags [Array<Integer>] The tags to search for
 # @param min_price [Integer] The minimum price to search for
 # @param max_price [Integer] The maximum price to search for
 # @param max_distance [Integer] The maximum distance to search for
@@ -273,9 +273,9 @@ get '/search' do
     filters = []
     filters << (ad.price <= params[:max_price].to_i if params[:max_price] && !params[:max_price].empty?)
     filters << (ad.price >= params[:min_price].to_i if params[:min_price] && !params[:min_price].empty?)
-    filters << ((if params[:categories]
-                   (params[:categories].all? do |category_id|
-                      ad.categories.include?(category_id.to_i)
+    filters << ((if params[:tags]
+                   (params[:tags].all? do |tag_id|
+                      ad.tags.include?(tag_id.to_i)
                     end)
                  end))
     if params[:max_distance] && params[:max_distance].to_i != 100

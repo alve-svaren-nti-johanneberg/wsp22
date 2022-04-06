@@ -165,15 +165,15 @@ class Ad < DbModel
   # @param price [Integer]
   # @param seller_id [Integer]
   # @param postal_code [String, Integer]
-  # @param categories [Array<Integer>]
-  def self.create(title, content, price, seller_id, postal_code, image_name, categories)
+  # @param tags [Array<Integer>]
+  def self.create(title, content, price, seller_id, postal_code, image_name, tags)
     session = db
     session.execute("INSERT INTO #{table_name}
       (title, content, price, seller_id, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     title, content, price, seller_id, postal_code, image_name, Time.now.to_i)
     ad = find_by_id(session.last_insert_row_id)
-    categories.each do |category_id|
-      ad.add_category(category_id)
+    tags.each do |tag_id|
+      ad.add_tag(tag_id)
     end
     ad
   end
@@ -183,8 +183,8 @@ class Ad < DbModel
   # @param price [Integer]
   # @param seller_id [Integer]
   # @param postal_code [String, Integer]
-  # @param categories [Array<Integer>]
-  def update(title, content, price, seller_id, postal_code, image_name, categories)
+  # @param tags [Array<Integer>]
+  def update(title, content, price, seller_id, postal_code, image_name, tags)
     session = db
     session.execute("UPDATE #{table_name} SET
       title = ?,
@@ -195,9 +195,9 @@ class Ad < DbModel
       image_name = ?,
       created_at = ? WHERE id = ?", title, content, price, seller_id, postal_code, image_name, Time.now.to_i, id)
 
-    clear_categories
-    categories.each do |category_id|
-      add_category(category_id)
+    clear_tags
+    tags.each do |tag_id|
+      add_tag(tag_id)
     end
   end
 
@@ -221,19 +221,19 @@ class Ad < DbModel
     File.delete(File.join(File.dirname(__FILE__), "userimgs/#{@image_name}")) if @image_name
   end
 
-  def categories
-    @categories ||= begin
-      data = db.execute("SELECT * FROM #{AdCategory.table_name} WHERE ad_id = ?", @id)
-      data.map { |category| Category.find_by_id(category['category_id']) }
+  def tags
+    @tags ||= begin
+      data = db.execute("SELECT * FROM #{AdTag.table_name} WHERE ad_id = ?", @id)
+      data.map { |tag| Tag.find_by_id(tag['tag_id']) }
     end
   end
 
-  def add_category(category_id)
-    db.execute("INSERT INTO #{AdCategory.table_name} (ad_id, category_id) VALUES (?, ?)", @id, category_id)
+  def add_tag(tag_id)
+    db.execute("INSERT INTO #{AdTag.table_name} (ad_id, tag_id) VALUES (?, ?)", @id, tag_id)
   end
 
-  def clear_categories
-    db.execute("DELETE FROM #{AdCategory.table_name} WHERE ad_id = ?", @id)
+  def clear_tags
+    db.execute("DELETE FROM #{AdTag.table_name} WHERE ad_id = ?", @id)
   end
 end
 
@@ -292,37 +292,37 @@ class Message < DbModel
   end
 end
 
-# The association table for categories on ads
-class AdCategory < DbModel
-  attr_reader :category_id, :ad_id
+# The association table for tags on ads
+class AdTag < DbModel
+  attr_reader :tag_id, :ad_id
 
   def self.table_name
-    Ad.table_name + Category.table_name
+    Ad.table_name + Tag.table_name
   end
 
   def self.create_table
     db.execute("CREATE TABLE IF NOT EXISTS `#{table_name}` (
       `id` INTEGER NOT NULL UNIQUE,
-      `category_id` INTEGER NOT NULL,
+      `tag_id` INTEGER NOT NULL,
       `ad_id` INTEGER NOT NULL,
-      FOREIGN KEY(`category_id`) REFERENCES `#{Category.table_name}`(`id`),
+      FOREIGN KEY(`tag_id`) REFERENCES `#{Tag.table_name}`(`id`),
       FOREIGN KEY(`ad_id`) REFERENCES `#{Ad.table_name}`(`id`),
       PRIMARY KEY(`id` AUTOINCREMENT))")
   end
 
   def initialize(data)
     super data
-    @category_id = data['category_id']
+    @tag_id = data['tag_id']
     @ad_id = data['ad_id']
   end
 end
 
-# A category
-class Category < DbModel
+# A tag
+class Tag < DbModel
   attr_reader :name, :slug
 
   def self.table_name
-    'Categories'
+    'Tags'
   end
 
   def self.create_table
@@ -348,12 +348,12 @@ class Category < DbModel
 
   def self.all
     data = db.execute("SELECT * FROM #{table_name}")
-    data.map { |category| new(category) }
+    data.map { |tag| new(tag) }
   end
 
   def ads
     @ads ||= begin
-      data = db.execute("SELECT * FROM #{AdCategory.table_name} WHERE category_id = ?", @id)
+      data = db.execute("SELECT * FROM #{AdTag.table_name} WHERE tag_id = ?", @id)
       data.map { |ad| Ad.find_by_id(ad['ad_id']) }
     end
   end
@@ -373,5 +373,5 @@ Dir.mkdir('userimgs') unless Dir.exist?('userimgs')
 User.create_table
 Ad.create_table
 Message.create_table
-Category.create_table
-AdCategory.create_table
+Tag.create_table
+AdTag.create_table

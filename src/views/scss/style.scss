@@ -100,7 +100,7 @@ a {
     }
 }
 
-.category-list {
+.tag-list {
     display: flex;
     list-style: none;
     padding: 0;
@@ -108,7 +108,7 @@ a {
     flex-wrap: wrap;
     gap: 1em;
 
-    .listed-category {
+    .listed-tag {
         a {
             display: flex;
             align-items: center;
@@ -550,13 +550,13 @@ textarea {
 }
 
 textarea,
-.category-select {
+.tag-select {
     resize: vertical;
     font-family: unset;
     min-height: 4em;
 }
 
-.category-select {
+.tag-select {
     height: 10rem;
 }
 

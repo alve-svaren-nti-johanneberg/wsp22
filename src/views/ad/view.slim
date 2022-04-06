@@ -13,10 +13,10 @@ article.card
     section.description
       - ad.content.split("\n").each do |paragraph|
         p = paragraph
-    - unless ad.categories.empty?
-      section.categories
-        p.bold Kategorier
-        == slim :'partials/category-list', locals: { categories: ad.categories }
+    - unless ad.tags.empty?
+      section.tags
+        p.bold Taggar
+        == slim :'partials/tag-list', locals: { tags: ad.tags }
     - if ad.seller == current_user || current_user&.admin
       form action="/ad/#{ad.id}/delete" method="post"
         - if ad.seller == current_user
