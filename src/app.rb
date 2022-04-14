@@ -38,9 +38,16 @@ def unauthorized
   slim :'generic/401'
 end
 
+def too_many_requests(route = '/')
+  status 429
+  slim :'generic/429', locals: { route: route }
+end
+
 not_found do
   slim :'generic/404'
 end
+
+RATE_LIMITS = Hash.new(Hash.new(0))
 
 # Make sure user is allowed to see page if not logged in
 before do
@@ -86,6 +93,8 @@ end
 #
 # @see Ad#create
 post '/ad/new' do
+  return too_many_requests('/ad/new') unless Time.now.to_f - RATE_LIMITS[:create_ad][current_user.id] > 10
+
   error = nil
 
   postal_code = params[:postal_code].delete(' ').delete('-').to_i
@@ -126,6 +135,7 @@ post '/ad/new' do
     params[:title], params[:content], params[:price].to_i,
     current_user.id, postal_code, new_name, params[:tags] || []
   )
+  RATE_LIMITS[:create_ad][current_user.id] = Time.now.to_f
   redirect "/ad/#{ad.id}"
 end
 
@@ -359,6 +369,7 @@ end
 # @see User#create
 post '/register' do
   error = nil
+  return too_many_requests('/register') unless Time.now.to_f - RATE_LIMITS[:register][request.ip] > 10
 
   postal_code = params[:postal_code].delete(' ').delete('-').to_i
   error = 'Postnummret måste vara 5 siffror' unless postal_code.to_s.length == 5
@@ -376,9 +387,9 @@ post '/register' do
     session[:form_error] = error
     return redirect '/register'
   end
-
   user_id = User.create(params[:name], params[:email], params[:password], postal_code)
   if !user_id.nil?
+    RATE_LIMITS[:register][request.ip] = Time.now.to_f
     session[:user_id] = user_id
     redirect(temp_session(:return_to) || '/')
   else
@@ -392,11 +403,14 @@ end
 # @param email [String] The email of the user
 # @param password [String] The password of the user
 post '/login' do
+  return too_many_requests('/login') unless Time.now.to_f - RATE_LIMITS[:login][request.ip] > 1
+
   user = User.find_by_email(params[:email])
   if user&.verify_password(params[:password])
     session[:user_id] = user.id
     redirect(temp_session(:return_to) || '/')
   else
+    RATE_LIMITS[:login][request.ip] = Time.now.to_f
     session[:form_error] = 'Felaktig mailadress eller lösenord'
     session[:old_data] = params
     redirect '/login'
