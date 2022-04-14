@@ -5,15 +5,15 @@ div.messages-container
     ul
       - current_user.conversations[:seller].each do |conversation|
         li.conversation
-          a href="/message/#{conversation[0]}/#{conversation[1]}" #{User.find_by_id(conversation[1]).name} angående #{Ad.find_by_id(conversation[0]).title}
+          a href="/message/#{conversation[0]}/#{conversation[1]}" #{User.find_by_id(conversation[1]).name} angående #{Listing.find_by_id(conversation[0]).title}
     h2 Du köper
     ul
       - current_user.conversations[:customer].each do |conversation|
         li.conversation
-            a href="/message/#{conversation}" #{Ad.find_by_id(conversation).title}
+            a href="/message/#{conversation}" #{Listing.find_by_id(conversation).title}
 
-  - if ad
-    section.messages == slim :'partials/message-area', locals: { ad: ad, messages: messages, to: to }
+  - if listing
+    section.messages == slim :'partials/message-area', locals: { listing: listing, messages: messages, to: to }
   - else
     section.messages
       p.center

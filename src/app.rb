@@ -24,7 +24,7 @@ end
 
 enable :sessions
 
-auth_needed = %w[/ad/new /message]
+auth_needed = %w[/listing/new /message]
 ignored_paths = %w[/style.css /favicon.ico /auth-needed]
 auth_paths = %w[/login /register /auth-needed]
 
@@ -78,22 +78,22 @@ get '/style.css' do
   scss :'scss/style', style: :compressed
 end
 
-# Shows the form to create a new ad
-get '/ad/new' do
-  slim :'ad/edit_or_create'
+# Shows the form to create a new listing
+get '/listing/new' do
+  slim :'listing/edit_or_create'
 end
 
-# Create a new ad
-# @param title [String] The title of the ad
-# @param content [String] The body of the ad
-# @param price [Integer] The price of the ad
-# @param postal_code [String] The postal code for the ad
+# Create a new listing
+# @param title [String] The title of the listing
+# @param content [String] The body of the listing
+# @param price [Integer] The price of the listing
+# @param postal_code [String] The postal code for the listing
 # @param cover [Tempfile] The cover image of the ad
 # @param tags [Array<Tag>] The tags of the ad
 #
-# @see Ad#create
-post '/ad/new' do
-  return too_many_requests('/ad/new') unless Time.now.to_f - RATE_LIMITS[:create_ad][current_user.id] > 10
+# @see Listing#create
+post '/listing/new' do
+  return too_many_requests('/listing/new') unless Time.now.to_f - RATE_LIMITS[:create_listing][current_user.id] > 10
 
   error = nil
 
@@ -110,7 +110,7 @@ post '/ad/new' do
   if error
     session[:old_data] = params
     session[:form_error] = error
-    return redirect '/ad/new'
+    return redirect '/listing/new'
   end
 
   new_name = nil
@@ -131,33 +131,33 @@ post '/ad/new' do
     end
   end
 
-  ad = Ad.create(
+  listing = Listing.create(
     params[:title], params[:content], params[:price].to_i,
     current_user.id, postal_code, new_name, params[:tags] || []
   )
-  RATE_LIMITS[:create_ad][current_user.id] = Time.now.to_f
-  redirect "/ad/#{ad.id}"
+  RATE_LIMITS[:create_listing][current_user.id] = Time.now.to_f
+  redirect "/listing/#{listing.id}"
 end
 
-# Shows for to edit an ad
-# @param :id [Integer] The id of the ad to edit
-get '/ad/:id/edit' do
-  ad = Ad.find_by_id(params[:id])
-  slim :'ad/edit_or_create', locals: { ad: ad }
+# Shows for to edit an listing
+# @param :id [Integer] The id of the listing to edit
+get '/listing/:id/edit' do
+  listing = Listing.find_by_id(params[:id])
+  slim :'listing/edit_or_create', locals: { listing: listing }
 end
 
-# Edit an ad
-# @param :id [Integer] The id of the ad to edit
-# @param title [String] The title of the ad
-# @param content [String] The body of the ad
-# @param price [Integer] The price of the ad
-# @param postal_code [String] The postal code for the ad
-# @param cover [Tempfile] The cover image of the ad
-# @param tags [Array<Tag>] The tags of the ad
+# Edit an listing
+# @param :id [Integer] The id of the listing to edit
+# @param title [String] The title of the listing
+# @param content [String] The body of the listing
+# @param price [Integer] The price of the listing
+# @param postal_code [String] The postal code for the listing
+# @param cover [Tempfile] The cover image of the listing
+# @param tags [Array<Tag>] The tags of the listing
 #
-# @see Ad#update
-post '/ad/:id/update' do
-  ad = Ad.find_by_id(params[:id])
+# @see Listing#update
+post '/listing/:id/update' do
+  listing = Listing.find_by_id(params[:id])
 
   error = nil
 
@@ -174,13 +174,13 @@ post '/ad/:id/update' do
   if error
     session[:old_data] = params
     session[:form_error] = error
-    return redirect '/ad/new'
+    return redirect '/listing/new'
   end
 
   new_name = nil
 
   if params[:cover]
-    File.delete("userimgs/#{ad.image_name}") if ad.image_name
+    File.delete("userimgs/#{listing.image_name}") if listing.image_name
     imagefile = params[:cover][:tempfile]
     # filename = params[:cover][:filename]
     # extension = filename.split('.').last
@@ -196,17 +196,17 @@ post '/ad/:id/update' do
     end
   end
 
-  ad.update(
+  listing.update(
     params[:title], params[:content], params[:price].to_i,
-    current_user.id, postal_code, new_name || ad.image_name, params[:tags]
+    current_user.id, postal_code, new_name || listing.image_name, params[:tags]
   )
 
-  redirect "/ad/#{ad.id}"
+  redirect "/listing/#{listing.id}"
 end
 
 # Shows all availible tags, and allows admins to create new tags
 get '/tags' do
-  slim :'ad/tags'
+  slim :'listing/tags'
 end
 
 # Create a new tag if the user is an admin
@@ -220,30 +220,30 @@ post '/tags' do
   redirect '/tags'
 end
 
-# Shows an ad
-# @param :id [Integer] The id of the ad to show
-get '/ad/:id' do
-  ad = Ad.find_by_id(params[:id])
-  raise Sinatra::NotFound unless ad
+# Shows an listing
+# @param :id [Integer] The id of the listing to show
+get '/listing/:id' do
+  listing = Listing.find_by_id(params[:id])
+  raise Sinatra::NotFound unless listing
 
-  slim :'ad/view', locals: { ad: ad }
+  slim :'listing/view', locals: { listing: listing }
 end
 
-# Fetches an image for an ad
-# @param :filename [String] The filename for the processed ad image
+# Fetches an image for an listing
+# @param :filename [String] The filename for the processed listing image
 get '/userimg/:filename' do
   send_file File.join(File.dirname(__FILE__), "userimgs/#{params[:filename]}")
 end
 
-# Deletes an ad
-# @param :id [String] The id of the ad to delete
-post '/ad/:id/delete' do
-  ad = Ad.find_by_id(params[:id])
-  raise Sinatra::NotFound unless ad
+# Deletes an listing
+# @param :id [String] The id of the listing to delete
+post '/listing/:id/delete' do
+  listing = Listing.find_by_id(params[:id])
+  raise Sinatra::NotFound unless listing
 
-  return forbidden unless ad.seller == current_user || current_user.admin
+  return forbidden unless listing.seller == current_user || current_user.admin
 
-  ad.delete
+  listing.delete
   session[:msg] = 'Annonsen har raderats'
   session[:success] = true
   redirect '/'
@@ -269,32 +269,32 @@ get '/register' do
   slim :'user/register'
 end
 
-# Searches for ads according to the specified filters
+# Searches for listings according to the specified filters
 # @param query [String] The query to search for
 # @param tags [Array<Integer>] The tags to search for
 # @param min_price [Integer] The minimum price to search for
 # @param max_price [Integer] The maximum price to search for
 # @param max_distance [Integer] The maximum distance to search for
 #
-# @see Ad#search
+# @see Listing#search
 get '/search' do
-  ads = Ad.search((params[:query] || '').split(' '))
-  ads.keep_if do |ad|
+  listings = Listing.search((params[:query] || '').split(' '))
+  listings.keep_if do |listing|
     filters = []
-    filters << (ad.price <= params[:max_price].to_i if params[:max_price] && !params[:max_price].empty?)
-    filters << (ad.price >= params[:min_price].to_i if params[:min_price] && !params[:min_price].empty?)
+    filters << (listing.price <= params[:max_price].to_i if params[:max_price] && !params[:max_price].empty?)
+    filters << (listing.price >= params[:min_price].to_i if params[:min_price] && !params[:min_price].empty?)
     filters << ((if params[:tags]
                    (params[:tags].all? do |tag_id|
-                      ad.tags.include?(tag_id.to_i)
+                      listing.tags.include?(tag_id.to_i)
                     end)
                  end))
     if params[:max_distance] && params[:max_distance].to_i != 100
-      filters << ((postal_code_distance(ad.postal_code, current_user.postal_code) || 100) <= params[:max_distance].to_i)
+      filters << ((postal_code_distance(listing.postal_code, current_user.postal_code) || 100) <= params[:max_distance].to_i)
     end
     filters.reject!(&:nil?)
     filters.all?
   end
-  slim :'ad/search', locals: { ads: ads }
+  slim :'listing/search', locals: { listings: listings }
 end
 
 # Shows a user's profile page
@@ -306,57 +306,57 @@ get '/user/:id' do
   slim :'user/profile', locals: { user: user }
 end
 
-# Shows the conversation between two users, the seller of an ad and the current_user
-# @param :id [Integer] The id of the ad to show the conversation with
+# Shows the conversation between two users, the seller of an listing and the current_user
+# @param :id [Integer] The id of the listing to show the conversation with
 get '/message/:id' do
-  ad = Ad.find_by_id(params[:id])
-  raise Sinatra::NotFound unless ad
-  return forbidden unless ad.seller != current_user
+  listing = Listing.find_by_id(params[:id])
+  raise Sinatra::NotFound unless listing
+  return forbidden unless listing.seller != current_user
 
-  slim :'user/messages', locals: { to: ad.seller, ad: ad, messages: Message.conversation(current_user, ad) }
+  slim :'user/messages', locals: { to: listing.seller, listing: listing, messages: Message.conversation(current_user, listing) }
 end
 
-# Shows the conversation between two users, the ad for which the conversation takes place and a customer
-# @param :id [Integer] The id of the ad to show the conversation with
+# Shows the conversation between two users, the listing for which the conversation takes place and a customer
+# @param :id [Integer] The id of the listing to show the conversation with
 # @param :customer [Integer] The id of the customer of the conversation
 get '/message/:id/:customer' do
   customer = User.find_by_id(params[:customer])
-  ad = Ad.find_by_id(params[:id])
-  raise Sinatra::NotFound unless ad && customer
-  return forbidden unless ad.seller == current_user
+  listing = Listing.find_by_id(params[:id])
+  raise Sinatra::NotFound unless listing && customer
+  return forbidden unless listing.seller == current_user
   return forbidden if customer == current_user
 
-  slim :'user/messages', locals: { to: customer, ad: ad, messages: Message.conversation(customer, ad) }
+  slim :'user/messages', locals: { to: customer, listing: listing, messages: Message.conversation(customer, listing) }
 end
 
-# Sends a message to the seller of an ad
-# @param :id [Integer] The id of the ad to send the message to the seller of
+# Sends a message to the seller of an listing
+# @param :id [Integer] The id of the listing to send the message to the seller of
 post '/message/:id' do
-  ad = Ad.find_by_id(params[:id])
-  raise Sinatra::NotFound unless ad
-  return forbidden unless ad.seller != current_user
+  listing = Listing.find_by_id(params[:id])
+  raise Sinatra::NotFound unless listing
+  return forbidden unless listing.seller != current_user
 
-  Message.create(ad, current_user, ad.seller, params[:content]) unless params[:content].empty?
-  redirect "/message/#{ad.id}"
+  Message.create(listing, current_user, listing.seller, params[:content]) unless params[:content].empty?
+  redirect "/message/#{listing.id}"
 end
 
-# Sends a message to a user as the seller of an ad
-# @param :id [Integer] The id of the ad to send the message from
+# Sends a message to a user as the seller of an listing
+# @param :id [Integer] The id of the listing to send the message from
 # @param :customer [Integer] The id of the user to send the message to
 post '/message/:id/:customer' do
   customer = User.find_by_id(params[:customer])
-  ad = Ad.find_by_id(params[:id])
-  raise Sinatra::NotFound unless ad && customer
-  return forbidden unless ad.seller == current_user
+  listing = Listing.find_by_id(params[:id])
+  raise Sinatra::NotFound unless listing && customer
+  return forbidden unless listing.seller == current_user
   return forbidden if customer == current_user
 
-  Message.create(ad, current_user, customer, params[:content]) unless params[:content].empty?
-  redirect "/message/#{ad.id}/#{customer.id}"
+  Message.create(listing, current_user, customer, params[:content]) unless params[:content].empty?
+  redirect "/message/#{listing.id}/#{customer.id}"
 end
 
 # Shows the base messages page, where the user can select which conversation to see
 get '/messages' do
-  slim :'user/messages', locals: { ad: nil }
+  slim :'user/messages', locals: { listing: nil }
 end
 
 # Creates a user

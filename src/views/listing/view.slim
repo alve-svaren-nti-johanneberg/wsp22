@@ -1,0 +1,26 @@
+article.card
+  - if listing.image_name
+    img.card-image src="/userimg/#{listing.image_name}" alt="Bild på #{listing.title}"
+  div.card-indent
+    header
+      div.card-title
+        h1 = listing.title
+        span.price = get_human_readable_price(listing.price)
+      p.seller-info
+        | säljs av 
+        a href="/user/#{listing.seller.id}" = listing.seller.name
+        |  · #{ad_position(listing)}
+    section.description
+      - listing.content.split("\n").each do |paragraph|
+        p = paragraph
+    - unless listing.tags.empty?
+      section.tags
+        p.bold Taggar
+        == slim :'partials/tag-list', locals: { tags: listing.tags }
+    - if listing.seller == current_user || current_user&.admin
+      form action="/listing/#{listing.id}/delete" method="post"
+        - if listing.seller == current_user
+          a.button href="/listing/#{listing.id}/edit" Redigera annons
+        input.destructive type="submit" value="Ta bort annons"
+    - unless listing.seller == current_user
+      a.button.full-width.message-icon-prefix href="/message/#{listing.id}" Skicka meddelande

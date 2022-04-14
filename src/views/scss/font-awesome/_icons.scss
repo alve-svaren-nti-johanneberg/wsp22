@@ -13,8 +13,8 @@ readers do not read off random characters that represent icons */
 .#{$fa-css-prefix}-acquisitions-incorporated:before {
     content: fa-content($fa-var-acquisitions-incorporated);
 }
-.#{$fa-css-prefix}-ad:before {
-    content: fa-content($fa-var-ad);
+.#{$fa-css-prefix}-listing:before {
+    content: fa-content($fa-var-listing);
 }
 .#{$fa-css-prefix}-address-book:before {
     content: fa-content($fa-var-address-book);

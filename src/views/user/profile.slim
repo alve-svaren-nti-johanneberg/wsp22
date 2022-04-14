@@ -8,8 +8,7 @@ article.card
         | Administratör
 
     h2 Annonser
-    - if user.ads.empty?
-      p.no-ads
-        | Användaren har inga aktiva annonser
+    - if user.listings.empty?
+      p.no-listings
     - else
-      == slim :'partials/ad-list', locals: { ads: user.ads, user_page: true }
+      == slim :'partials/listing-list', locals: { listings: user.listings, user_page: true }

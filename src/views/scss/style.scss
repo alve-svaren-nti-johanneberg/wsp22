@@ -60,12 +60,12 @@ a {
     }
 }
 
-.ad-list {
+.listing-list {
     padding: 0;
     margin-top: 3rem;
 }
 
-.listed-ad {
+.listed-listing {
     > a {
         text-decoration: none;
         color: inherit;
@@ -124,7 +124,7 @@ a {
     }
 }
 
-.user-ad-list {
+.user-listing-list {
     margin-top: 0;
     .card {
         background-color: var(--bg-color-dark);
@@ -237,7 +237,7 @@ section h1,
     background-color: var(--bg-color-dark);
 }
 
-.ad-panel-container {
+.listing-panel-container {
     @include center;
     @include form-limit-width;
     max-width: 20rem;
@@ -462,7 +462,7 @@ form.wide-form {
     }
 }
 
-.ad-info {
+.listing-info {
     background-color: var(--bg-color);
     display: flex;
     padding: 0 1rem;

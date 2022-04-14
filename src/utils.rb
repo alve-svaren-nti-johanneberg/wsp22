@@ -105,26 +105,26 @@ module Utils
   end
 
   # Returns a human readable distance from the current user to a specified ad
-  # @param ad [Ad]
+  # @param listing [Listing]
   # @return [String]
-  def human_readable_distance(ad)
-    distance = postal_code_distance(current_user.postal_code, ad.postal_code) / 1000
+  def human_readable_distance(listing)
+    distance = postal_code_distance(current_user.postal_code, listing.postal_code) / 1000
     text = "#{group_number(distance.to_i)} km"
     text = 'Inom 2 km' if distance < 2
 
     text
   end
 
-  # Returns the name of the place where an ad is located
-  # @param ad [Ad]
+  # Returns the name of the place where an listing is located
+  # @param listing [Listing]
   # @return [String]
-  def ad_position(ad)
-    place = postal_codes[ad.postal_code]
-    return "Okänd plats (#{ad.postal_code})" unless place
+  def listing_position(listing)
+    place = postal_codes[listing.postal_code]
+    return "Okänd plats (#{listing.postal_code})" unless place
 
     text = "#{place['place_name']}, #{place['admin_name1']}"
     text = place['place_name'] if place['admin_name1'] == place['place_name']
-    return "#{text} · #{human_readable_distance(ad)}" if current_user
+    return "#{text} · #{human_readable_distance(listing)}" if current_user
 
     text
   end

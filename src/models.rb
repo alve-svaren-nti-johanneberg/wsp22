@@ -98,9 +98,9 @@ class User < DbModel
     @password_hash == password
   end
 
-  def ads
-    db.execute("SELECT * FROM #{Ad.table_name} WHERE seller_id = ?", @id).map do |ad|
-      Ad.new(ad)
+  def listings
+    db.execute("SELECT * FROM #{Listing.table_name} WHERE seller_id = ?", @id).map do |listing|
+      Listing.new(listing)
     end
   end
 
@@ -109,14 +109,14 @@ class User < DbModel
       as_seller = []
       as_customer = []
       db.execute(
-        "SELECT * FROM #{Message.table_name} WHERE customer_id = ? OR ad_id IN (SELECT id FROM #{Ad.table_name} WHERE seller_id = ?)", @id, @id
+        "SELECT * FROM #{Message.table_name} WHERE customer_id = ? OR listing_id IN (SELECT id FROM #{Listing.table_name} WHERE seller_id = ?)", @id, @id
       ).map do |message|
         message = Message.new(message)
-        unless as_seller.include?([message.ad.id, message.customer.id]) || as_customer.include?(message.ad.id)
+        unless as_seller.include?([message.listing.id, message.customer.id]) || as_customer.include?(message.listing.id)
           if message.customer == self
-            as_customer << message.ad.id
+            as_customer << message.listing.id
           else
-            as_seller << [message.ad.id, message.customer.id]
+            as_seller << [message.listing.id, message.customer.id]
           end
         end
       end
@@ -125,12 +125,12 @@ class User < DbModel
   end
 end
 
-# An ad that a user created
-class Ad < DbModel
+# An listing that a user created
+class Listing < DbModel
   attr_reader :price, :seller, :title, :content, :sold, :postal_code, :image_name, :created_at
 
   def self.table_name
-    'Ads'
+    'Listings'
   end
 
   def self.create_table
@@ -171,11 +171,11 @@ class Ad < DbModel
     session.execute("INSERT INTO #{table_name}
       (title, content, price, seller_id, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     title, content, price, seller_id, postal_code, image_name, Time.now.to_i)
-    ad = find_by_id(session.last_insert_row_id)
+    listing = find_by_id(session.last_insert_row_id)
     tags.each do |tag_id|
-      ad.add_tag(tag_id)
+      listing.add_tag(tag_id)
     end
-    ad
+    listing
   end
 
   # @param title [String]
@@ -201,7 +201,7 @@ class Ad < DbModel
     end
   end
 
-  # @return [Array<Ad>]
+  # @return [Array<Listing>]
   def self.search(words)
     query = words.empty? && "SELECT * FROM #{table_name}"
     wildcards = words.map do
@@ -217,29 +217,29 @@ class Ad < DbModel
 
   def delete
     db.execute("DELETE FROM #{table_name} WHERE id = ?", @id)
-    db.execute("DELETE FROM #{Message.table_name} WHERE ad_id = ?", @id)
+    db.execute("DELETE FROM #{Message.table_name} WHERE listing_id = ?", @id)
     File.delete(File.join(File.dirname(__FILE__), "userimgs/#{@image_name}")) if @image_name
   end
 
   def tags
     @tags ||= begin
-      data = db.execute("SELECT * FROM #{AdTag.table_name} WHERE ad_id = ?", @id)
+      data = db.execute("SELECT * FROM #{ListingTag.table_name} WHERE listing_id = ?", @id)
       data.map { |tag| Tag.find_by_id(tag['tag_id']) }
     end
   end
 
   def add_tag(tag_id)
-    db.execute("INSERT INTO #{AdTag.table_name} (ad_id, tag_id) VALUES (?, ?)", @id, tag_id)
+    db.execute("INSERT INTO #{ListingTag.table_name} (listing_id, tag_id) VALUES (?, ?)", @id, tag_id)
   end
 
   def clear_tags
-    db.execute("DELETE FROM #{AdTag.table_name} WHERE ad_id = ?", @id)
+    db.execute("DELETE FROM #{ListingTag.table_name} WHERE listing_id = ?", @id)
   end
 end
 
 # A message that someone sent
 class Message < DbModel
-  attr_reader :content, :ad, :customer, :sender, :receiver, :timestamp
+  attr_reader :content, :listing, :customer, :sender, :receiver, :timestamp
 
   def self.table_name
     'Messages'
@@ -249,71 +249,71 @@ class Message < DbModel
     db.execute("CREATE TABLE IF NOT EXISTS `#{table_name}` (
       `id` INTEGER NOT NULL UNIQUE,
       `content` TEXT NOT NULL,
-      `ad_id` INTEGER NOT NULL,
+      `listing_id` INTEGER NOT NULL,
       `customer_id` INTEGER NOT NULL,
       `is_from_customer` INTEGER NOT NULL,
       `timestamp` INTEGER NOT NULL,
       FOREIGN KEY(`customer_id`) REFERENCES `#{User.table_name}`(`id`),
-      FOREIGN KEY(`ad_id`) REFERENCES `#{Ad.table_name}`(`id`),
+      FOREIGN KEY(`listing_id`) REFERENCES `#{Listing.table_name}`(`id`),
       PRIMARY KEY(`id` AUTOINCREMENT))")
   end
 
   # @param user [User]
-  # @param ad [Ad]
-  def self.conversation(user, ad)
-    db.execute("SELECT * FROM #{table_name} WHERE customer_id = ? AND ad_id = ?", user.id, ad.id).map do |data|
+  # @param listing [Listing]
+  def self.conversation(user, listing)
+    db.execute("SELECT * FROM #{table_name} WHERE customer_id = ? AND listing_id = ?", user.id, listing.id).map do |data|
       new(data)
     end
   end
 
   def initialize(data)
     super data
-    @ad = Ad.find_by_id(data['ad_id'])
+    @listing = Listing.find_by_id(data['listing_id'])
     @content = data['content']
     @timestamp = Time.at(data['timestamp'])
     @customer = User.find_by_id(data['customer_id'])
     @from_customer = !data['is_from_customer'].zero?
-    @sender = @from_customer ? @customer : @ad.seller
-    @receiver = @from_customer ? @ad.seller : @customer
+    @sender = @from_customer ? @customer : @listing.seller
+    @receiver = @from_customer ? @listing.seller : @customer
   end
 
-  # @param ad [Ad]
+  # @param listing [Listing]
   # @param sender [User]
   # @param receiver [User]
   # @param content [String]
-  def self.create(ad, sender, receiver, content)
-    from_customer = sender != ad.seller
+  def self.create(listing, sender, receiver, content)
+    from_customer = sender != listing.seller
     session = db
     session.execute(
-      "INSERT INTO #{table_name} (ad_id, customer_id, is_from_customer, content, timestamp) VALUES (?, ?, ?, ?, ?)",
-      ad.id, (from_customer ? sender : receiver).id, from_customer ? 1 : 0, content, Time.now.to_i
+      "INSERT INTO #{table_name} (listing_id, customer_id, is_from_customer, content, timestamp) VALUES (?, ?, ?, ?, ?)",
+      listing.id, (from_customer ? sender : receiver).id, from_customer ? 1 : 0, content, Time.now.to_i
     )
     session.last_insert_row_id
   end
 end
 
-# The association table for tags on ads
-class AdTag < DbModel
+# The association table for tags on listing
+class ListingTag < DbModel
   attr_reader :tag_id, :ad_id
 
   def self.table_name
-    Ad.table_name + Tag.table_name
+    Listing.table_name + Tag.table_name
   end
 
   def self.create_table
     db.execute("CREATE TABLE IF NOT EXISTS `#{table_name}` (
       `id` INTEGER NOT NULL UNIQUE,
       `tag_id` INTEGER NOT NULL,
-      `ad_id` INTEGER NOT NULL,
+      `listing_id` INTEGER NOT NULL,
       FOREIGN KEY(`tag_id`) REFERENCES `#{Tag.table_name}`(`id`),
-      FOREIGN KEY(`ad_id`) REFERENCES `#{Ad.table_name}`(`id`),
+      FOREIGN KEY(`listing_id`) REFERENCES `#{Listing.table_name}`(`id`),
       PRIMARY KEY(`id` AUTOINCREMENT))")
   end
 
   def initialize(data)
     super data
     @tag_id = data['tag_id']
-    @ad_id = data['ad_id']
+    @ad_id = data['listing_id']
   end
 end
 
@@ -351,10 +351,10 @@ class Tag < DbModel
     data.map { |tag| new(tag) }
   end
 
-  def ads
-    @ads ||= begin
-      data = db.execute("SELECT * FROM #{AdTag.table_name} WHERE tag_id = ?", @id)
-      data.map { |ad| Ad.find_by_id(ad['ad_id']) }
+  def listing
+    @listing ||= begin
+      data = db.execute("SELECT * FROM #{ListingTag.table_name} WHERE tag_id = ?", @id)
+      data.map { |listing| Listing.find_by_id(listing['listing_id']) }
     end
   end
 
@@ -371,7 +371,7 @@ end
 Dir.mkdir('userimgs') unless Dir.exist?('userimgs')
 
 User.create_table
-Ad.create_table
+Listing.create_table
 Message.create_table
 Tag.create_table
-AdTag.create_table
+ListingTag.create_table

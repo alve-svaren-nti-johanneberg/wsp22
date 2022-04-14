@@ -1,0 +1,30 @@
+ruby:
+  listing = nil unless defined? ad
+
+article.card
+  form action="#{listing ? "/listing/#{listing.id}/update" : "/listing/new"}" method="post" enctype="multipart/form-data"
+    / img src="/userimg/#{listing.image_id}" alt="Bild på #{listing.title}"
+    img.card-image id="preview-picture" src=(listing ? "/userimg/#{listing.image_name}" : "")
+    div.card-indent
+      p.error = temp_session :form_error
+      input type="file" id="cover" name="cover" accept="image/*"
+      header
+        div.card-title
+          input.flat type="text" maxlength="64" placeholder="Ange titel" name="title" value="#{listing&.title}"
+          input.flat type="number" oninput="this.reportValidity()" min="0" max="1000000000000" placeholder="Pris (i kr)" name="price" value="#{listing&.price}"
+        input.flat type="text" title="Postnummer, t.ex 12345" oninput="this.reportValidity()" pattern="[1-9]\d{4}" placeholder="Ange postnummer" value="#{listing&.postal_code || current_user.postal_code}" name="postal_code"
+      textarea.flat name="content" rows="8" placeholder="Beskrivning av vara" = listing&.content
+      label
+        | Taggar
+        select.flat.tag-select multiple="" name="tags[]"
+          - Tag.all.each do |tag|
+              option value="#{tag.id}" selected=("selected" if listing&.tags&.include? tag) #{tag.name} (#{tag.listings.count})
+      input.full-width type="submit" value="#{listing ? "Uppdatera annons" : "Skapa annons"}"
+
+javascript: 
+  const cover = document.querySelector("#cover");
+  const updatePicture = () => {
+    document.querySelector("#preview-picture").src = URL.createObjectURL(cover.files[0])
+  }
+  cover.addEventListener("change", updatePicture);
+  updatePicture();

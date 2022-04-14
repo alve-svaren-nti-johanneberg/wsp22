@@ -24,7 +24,7 @@ div.search-container
         header.bold Taggar
         select.flat.tag-select multiple="" name="tags[]"
           - Tag.all.each do |tag|
-              option value="#{tag.id}" selected=("selected" if params[:tags]&.include? tag.id.to_s) #{tag.name} (#{tag.ads.count})
+              option value="#{tag.id}" selected=("selected" if params[:tags]&.include? tag.id.to_s) #{tag.name} (#{tag.listings.count})
 
       button.full-width.filter-icon-prefix type="submit" Filtrera
       a.no-underline href="/search?query=#{params[:query]}" Rensa filter
@@ -32,8 +32,8 @@ div.search-container
   section.results
     form.full-width action="/search" method="get"
       input.full-width#search-input name="query" type="text" value="#{params[:query]}" placeholder="Sök vara"
-    p = "#{ads.count} annons#{'er' unless ads.count == 1} matchar sökningen"
-    == slim :'partials/ad-list', locals: { ads: ads }
+    p = "#{listings.count} annons#{'er' unless listings.count == 1} matchar sökningen"
+    == slim :'partials/listing-list', locals: { listings: listings }
 
 javascript:
     const updateSlider = () => {

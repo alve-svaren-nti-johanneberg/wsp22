@@ -1,15 +1,15 @@
 div.messages-wrapper
-  section.ad-info
-    - if ad.image_name
-      img src="/userimg/#{ad.image_name}" alt="Bild på #{ad.title}"
-    a.title href="/ad/#{ad.id}" = ad.title
-    p.price.success = get_human_readable_price(ad.price)
-    - if ad.seller == current_user
+  section.listing-info
+    - if listing.image_name
+      img src="/userimg/#{listing.image_name}" alt="Bild på #{listing.title}"
+    a.title href="/listing/#{listing.id}" = listing.title
+    p.price.success = get_human_readable_price(listing.price)
+    - if listing.seller == current_user
         p Du är säljare av denna annonsen
   section#message-area
     p.center.pre
       |Detta är början av din konversation med 
-      a href="/user/#{(ad.seller == current_user ? to : ad.seller).id}" = (ad.seller == current_user ? to : ad.seller).name
+      a href="/user/#{(listing.seller == current_user ? to : listing.seller).id}" = (listing.seller == current_user ? to : listing.seller).name
     div.padder
     - messages.each_with_index do |message, index|
       - if index == 0 || message.timestamp.to_date != messages[index - 1].timestamp.to_date

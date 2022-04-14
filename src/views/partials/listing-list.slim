@@ -1,0 +1,13 @@
+ul.listing-list class=((defined? user_page) && user_page ? "user-listing-list" : "")
+  - listings.each do |listing|
+    li.listed-ad
+      a href="/listing/#{listing.id}"
+        article.card
+            - if listing.image_name
+              img.card-image src="/userimg/#{listing.image_name}" alt="Bild på #{listing.title}"
+            div.card-indent.fully-pad.slim
+              header
+                div.card-title
+                  h1 = listing.title
+                  span.price = get_human_readable_price(listing.price)
+              p.info = listing_position(listing)
