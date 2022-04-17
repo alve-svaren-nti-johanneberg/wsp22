@@ -61,3 +61,5 @@ src/data.db
 src/data.db*
 
 src/userimgs/
+
+.env*
