@@ -46,7 +46,7 @@ end
 
 # A user
 class User < DbModel
-  attr_reader :email, :name, :admin, :created_at, :postal_code
+  attr_reader :email, :name, :admin, :created_at, :postal_code, :password_hash
 
   def self.table_name
     'Users'
@@ -128,18 +128,21 @@ class User < DbModel
     end
   end
 
+  def update_password(password)
+    hash = BCrypt::Password.create(password)
+    db.execute("UPDATE #{table_name} SET password_hash = ? WHERE id = ?", hash, @id)
+  end
+
   # @param name [String]
   # @param email [String]
   # @param postal_code [String]
   # @param password [String, nil]
   def update(name, email, postal_code, password)
-    hash = BCrypt::Password.create(password)
-
     db.execute("UPDATE #{table_name} SET
       name = ?,
       email = ?,
       postal_code = ? WHERE id = ?", name, email, postal_code, @id)
-    db.execute("UPDATE #{table_name} SET password_hash = ? WHERE id = ?", hash, @id) if password
+    update_password(password) if password
   end
 end
 

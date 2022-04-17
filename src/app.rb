@@ -14,11 +14,11 @@ if settings.development?
   require 'rack-livereload'
   require 'sinatra/reloader'
 
-  use Rack::LiveReload, source: :vendored
+  # use Rack::LiveReload, source: :vendored
 
-  @guard ||= Thread.new do
-    system('bundle exec guard')
-  end
+  # @guard ||= Thread.new do
+  #   system('bundle exec guard')
+  # end
 
   also_reload 'models.rb', 'utils.rb'
 end
@@ -376,6 +376,38 @@ end
 # Shows the base messages page, where the user can select which conversation to see
 get '/messages' do
   slim :'user/messages', locals: { listing: nil }
+end
+
+get '/request-reset-password' do
+  slim :'user/request-reset-password'
+end
+
+get '/reset-password' do
+  user = check_valid_token(params[:token])
+  return forbidden unless user
+
+  slim :'user/reset-password', { locals: { user: user, token: params[:token] } }
+end
+
+post '/reset-password' do
+  user = check_valid_token(params[:token])
+  return forbidden unless user
+
+  user.update_password(params[:password])
+  session[:msg] = 'Lösenordet har ändrats'
+  session[:success] = true
+  redirect '/login'
+end
+
+post '/request-reset-password' do
+  user = User.find_by_email(params[:email])
+  session[:form_error] = 'Mailadressen kunde inte hittas' unless user
+  return redirect '/request-reset-password' unless user
+
+  send_reset_email(user)
+  session[:msg] = "Ett mail har skickats till #{params[:email]}"
+  session[:success] = true
+  redirect '/login'
 end
 
 # Creates a user

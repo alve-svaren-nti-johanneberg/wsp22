@@ -2,10 +2,19 @@
 
 require 'sinatra'
 require 'csv'
+require 'mailgun-ruby'
+require 'slim'
+require 'jwt'
+require 'digest'
+require 'securerandom'
 require_relative 'models'
 
 # Module for utility functions
 module Utils
+  def jwt_secret
+    @jwt_secret ||= ENV['JWT_SECRET'] || 'fallbacksecret'
+  end
+
   def temp_session(symbol)
     value = session[symbol]
     session.delete(symbol)
@@ -127,5 +136,53 @@ module Utils
     return "#{text} · #{human_readable_distance(listing)}" if current_user
 
     text
+  end
+
+  def get_short_hash(data)
+    Digest::SHA2.new(256).hexdigest(data)[0, 16]
+  end
+
+  # @param user [User]
+  def send_reset_email(user)
+    p jwt_secret
+    token = JWT.encode(
+      { iat: Time.now.to_i, sub: user.id, sum: get_short_hash(user.password_hash) }, jwt_secret, 'HS256'
+    )
+
+    # user.update(reset_token: token, reset_sent_at: Time.zone.now)
+
+    url = "#{request.base_url}/reset-password?token=#{token}"
+
+    client = Mailgun::Client.new(ENV['MAILGUN_KEY'], 'api.eu.mailgun.net')
+
+    mail = Mailgun::MessageBuilder.new
+    mail.from('noreply@blocketklon.svaren.dev', { 'first' => 'Blocketklon' })
+    mail.add_recipient(:to, user.email)
+    mail.subject('Ändra lösenord för blocketklon')
+    mail.body_html(slim(:'mail/reset-password', locals: { url: url, user: user }, layout: false))
+
+    # Send your message through the client
+    client.send_message 'blocketklon.svaren.dev', mail
+  end
+
+  # @param token [String]
+  # @return [User, nil]
+  def check_valid_token(token)
+    p jwt_secret
+    payload = nil
+    return nil unless token
+
+    begin
+      payload = JWT.decode(token, jwt_secret, true, { algorithm: 'HS256' })[0]
+    rescue JWT::DecodeError
+      return nil
+    end
+
+    user = User.find_by_id(payload['sub'])
+    return nil unless user
+    return nil unless payload['sum'] == get_short_hash(user.password_hash)
+    return nil unless payload['iat'] < Time.now.to_i + (24 * 3600)
+
+    user
   end
 end
