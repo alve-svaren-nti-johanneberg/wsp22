@@ -1,5 +1,5 @@
 ruby:
-  listing = nil unless defined? ad
+  listing = nil unless defined? listing
 
 article.card
   form action="#{listing ? "/listing/#{listing.id}/update" : "/listing/new"}" method="post" enctype="multipart/form-data"

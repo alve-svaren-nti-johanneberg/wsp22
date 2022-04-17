@@ -15,7 +15,8 @@ if settings.development?
   require 'sinatra/reloader'
 
   use Rack::LiveReload, source: :vendored
-  Thread.new do
+
+  @guard ||= Thread.new do
     system('bundle exec guard')
   end
 
@@ -24,7 +25,7 @@ end
 
 enable :sessions
 
-auth_needed = %w[/listing/new /message]
+auth_needed = %w[/listing/new /message /user/edit]
 ignored_paths = %w[/style.css /favicon.ico /auth-needed]
 auth_paths = %w[/login /register /auth-needed]
 
@@ -295,6 +296,24 @@ get '/search' do
     filters.all?
   end
   slim :'listing/search', locals: { listings: listings }
+end
+
+get '/user/edit' do
+  return unauthorized unless current_user
+
+  slim :'user/edit'
+end
+
+post '/user/edit' do
+  return unauthorized unless current_user
+
+  unless current_user.verify_password(params[:password])
+    session[:form_error] = 'Lösenordet stämmer inte'
+    return redirect '/user/edit'
+  end
+  p params.to_h
+  current_user.update(params[:name], params[:email], params[:postal_code], params[:new_password])
+  redirect "/user/#{current_user.id}"
 end
 
 # Shows a user's profile page

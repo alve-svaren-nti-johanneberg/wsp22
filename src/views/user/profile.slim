@@ -1,7 +1,10 @@
 
 article.card
   div.card-indent
-    h1 #{user.name}s profil
+    h1
+      |#{user.name}s profil
+      - if user == current_user
+        a.fa.no-underline.float-right href="/user/edit" 
 
     - if user.admin
       p.admin

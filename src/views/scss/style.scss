@@ -479,6 +479,11 @@ form.wide-form {
     }
 }
 
+.option-form {
+    display: flex;
+    gap: 1rem;
+}
+
 input {
     font-family: inherit;
 }
@@ -566,6 +571,10 @@ textarea,
 
 .no-underline {
     text-decoration: none;
+}
+
+.float-right {
+    float: right;
 }
 
 .button,

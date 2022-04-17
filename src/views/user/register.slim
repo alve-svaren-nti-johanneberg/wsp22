@@ -3,7 +3,7 @@ h1.center Skapa konto
 form.real-form action="/register" method="post"
   - if session[:form_error]
     p.error = temp_session :form_error
-  input.full-width type="text" oninput="this.reportValidity()" placeholder="Namn" title="Får bara bestå av bokstäver, siffror, bindestreck och understreck. Max 16 tecken långt" name="name" pattern="[äÄöÖåÅa-zA-Z\-_0-9]{1,16}" /
+  input.full-width type="text" oninput="this.reportValidity()" placeholder="Visningsnamn" title="Får bara bestå av bokstäver, siffror, bindestreck och understreck. Max 16 tecken långt" name="name" pattern="[äÄöÖåÅa-zA-Z\-_0-9]{1,16}" /
   input.full-width type="email" placeholder="Email" name="email"/
   input.full-width type="text" title="Postnummer, t.ex 12345" oninput="this.reportValidity()" pattern="[1-9]\d{4}" placeholder="Postnummer" name="postal_code"
   input.full-width type="password" placeholder="Lösenord" name="password"/

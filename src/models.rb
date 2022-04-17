@@ -74,6 +74,10 @@ class User < DbModel
     @password_hash = BCrypt::Password.new(data['password_hash'])
   end
 
+  # @param name [String]
+  # @param email [String]
+  # @param password [String]
+  # @param postal_code [String]
   def self.create(name, email, password, postal_code)
     hash = BCrypt::Password.create(password)
     session = db
@@ -122,6 +126,20 @@ class User < DbModel
       end
       { seller: as_seller, customer: as_customer }
     end
+  end
+
+  # @param name [String]
+  # @param email [String]
+  # @param postal_code [String]
+  # @param password [String, nil]
+  def update(name, email, postal_code, password)
+    hash = BCrypt::Password.create(password)
+
+    db.execute("UPDATE #{table_name} SET
+      name = ?,
+      email = ?,
+      postal_code = ? WHERE id = ?", name, email, postal_code, @id)
+    db.execute("UPDATE #{table_name} SET password_hash = ? WHERE id = ?", hash, @id) if password
   end
 end
 
