@@ -351,10 +351,10 @@ class Tag < DbModel
     data.map { |tag| new(tag) }
   end
 
-  def listing
-    @listing ||= begin
+  def listings
+    @listings ||= begin
       data = db.execute("SELECT * FROM #{ListingTag.table_name} WHERE tag_id = ?", @id)
-      data.map { |listing| Listing.find_by_id(listing['listing_id']) }
+      data.map { |listings| Listing.find_by_id(listings['listing_id']) }
     end
   end
 

@@ -1,6 +1,6 @@
 ul.listing-list class=((defined? user_page) && user_page ? "user-listing-list" : "")
   - listings.each do |listing|
-    li.listed-ad
+    li.listed-listing
       a href="/listing/#{listing.id}"
         article.card
             - if listing.image_name
