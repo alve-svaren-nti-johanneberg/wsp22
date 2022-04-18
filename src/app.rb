@@ -290,7 +290,8 @@ get '/search' do
                     end)
                  end))
     if params[:max_distance] && params[:max_distance].to_i != 100
-      filters << ((postal_code_distance(listing.postal_code, current_user.postal_code) || 100) <= params[:max_distance].to_i)
+      filters << ((postal_code_distance(listing.postal_code,
+                                        current_user.postal_code) || 100) <= params[:max_distance].to_i)
     end
     filters.reject!(&:nil?)
     filters.all?
@@ -332,7 +333,8 @@ get '/message/:id' do
   raise Sinatra::NotFound unless listing
   return forbidden unless listing.seller != current_user
 
-  slim :'user/messages', locals: { to: listing.seller, listing: listing, messages: Message.conversation(current_user, listing) }
+  slim :'user/messages',
+       locals: { to: listing.seller, listing: listing, messages: Message.conversation(current_user, listing) }
 end
 
 # Shows the conversation between two users, the listing for which the conversation takes place and a customer

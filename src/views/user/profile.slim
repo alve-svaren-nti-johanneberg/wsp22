@@ -12,6 +12,6 @@ article.card
 
     h2 Annonser
     - if user.listings.empty?
-      p.no-listings
+      p.no-listings Användaren har inga annonser
     - else
       == slim :'partials/listing-list', locals: { listings: user.listings, user_page: true }
