@@ -25,7 +25,6 @@ not_found do
   slim :'generic/404'
 end
 
-
 # Make sure user is allowed to see page if not logged in
 before do
   status temp_session(:status_code) if session[:status_code]

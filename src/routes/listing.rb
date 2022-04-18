@@ -166,8 +166,8 @@ get '/search' do
     filters << (listing.price <= params[:max_price].to_i if params[:max_price] && !params[:max_price].empty?)
     filters << (listing.price >= params[:min_price].to_i if params[:min_price] && !params[:min_price].empty?)
     filters << ((if params[:tags]
-                   (params[:tags].all? do |tag_id|
-                      listing.tags.include?(tag_id.to_i)
+                   (params[:tags].all? do |tag_slug|
+                      listing.tags.map(&:slug).include?(tag_slug)
                     end)
                  end))
     if params[:max_distance] && params[:max_distance].to_i != 100

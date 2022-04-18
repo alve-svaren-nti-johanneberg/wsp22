@@ -1,6 +1,6 @@
 ul.tag-list
   - tags.each do |tag|
     li.listed-tag title="Det finns #{tag.listings.count} annons#{tag.listings.count > 1 ? 'er' : ''} i denna taggen"
-      a href="/tag/#{tag.slug}" 
+      a href="/search?tags[]=#{tag.slug}" 
         | #{tag.name}
         span.count = " (#{tag.listings.count})"
