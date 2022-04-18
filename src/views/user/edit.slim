@@ -3,9 +3,9 @@ article.card
   form action="/user/edit" method="post"
     div.card-indent
       p.error = temp_session :form_error
-      input.flat type="text" oninput="this.reportValidity()" placeholder="Visningsnamn" title="Får bara bestå av bokstäver, siffror, bindestreck och understreck. Max 16 tecken långt" name="name" pattern="[äÄöÖåÅa-zA-Z\-_0-9]{1,16}" value="#{current_user&.name}"
+      input.flat type="text" autocomplete="nickname" oninput="this.reportValidity()" placeholder="Visningsnamn" title="Får bara bestå av bokstäver, siffror, bindestreck och understreck. Max 16 tecken långt" name="name" pattern="[äÄöÖåÅa-zA-Z\-_0-9]{1,16}" value="#{current_user&.name}"
       input.flat type="text" title="Postnummer" placeholder="Postnummer" oninput="this.reportValidity()" pattern="[1-9]\d{4}" name="postal_code" value="#{current_user&.postal_code}"
       input.flat type="email" title="E-post" placeholder="E-post" name="email" value="#{current_user&.email}"
-      input.flat type="password" title="Nytt lösenord" placeholder="Nytt lösenord" name="new_password"
-      input.flat type="password" required="" title="Nuvarande lösenord" placeholder="Nuvarande lösenord" name="password"
+      input.flat type="password" autocomplete="new-password" title="Nytt lösenord" placeholder="Nytt lösenord" name="new_password"
+      input.flat type="password" required="" autocomplete="current-password" title="Nuvarande lösenord" placeholder="Nuvarande lösenord" name="password"
       input.full-width type="submit" value="Spara"

@@ -44,7 +44,7 @@ post '/listing/new' do
     new_name = "#{SecureRandom.uuid}.jpg"
     data = imagefile.read
 
-    new_file_name = File.join(File.dirname(__FILE__), "userimgs/#{new_name}")
+    new_file_name = File.join(File.dirname(__FILE__), "../userimgs/#{new_name}")
 
     image = Magick::Image.from_blob(data).first
     image.format = 'jpeg'
@@ -109,7 +109,7 @@ post '/listing/:id/update' do
     new_name = "#{SecureRandom.uuid}.jpg"
     data = imagefile.read
 
-    new_file_name = "userimgs/#{new_name}"
+    new_file_name = "../userimgs/#{new_name}"
 
     image = Magick::Image.from_blob(data).first
     image.format = 'jpeg'
