@@ -128,7 +128,10 @@ class User < DbModel
     end
   end
 
+  # @param password [String]
   def update_password(password)
+    return nil if password.empty?
+
     hash = BCrypt::Password.create(password)
     db.execute("UPDATE #{table_name} SET password_hash = ? WHERE id = ?", hash, @id)
   end
@@ -198,8 +201,8 @@ class Listing < DbModel
       (title, content, price, seller_id, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     title, content, price, seller_id, postal_code, image_name, Time.now.to_i)
     listing = find_by_id(session.last_insert_row_id)
-    tags.each do |tag_id|
-      listing.add_tag(tag_id)
+    tags.each do |tag_slug|
+      listing.add_tag(tag_slug)
     end
     listing
   end
@@ -222,8 +225,8 @@ class Listing < DbModel
       created_at = ? WHERE id = ?", title, content, price, seller_id, postal_code, image_name, Time.now.to_i, id)
 
     clear_tags
-    tags.each do |tag_id|
-      add_tag(tag_id)
+    tags.each do |tag_slug|
+      add_tag(tag_slug)
     end
   end
 
@@ -254,8 +257,8 @@ class Listing < DbModel
     end
   end
 
-  def add_tag(tag_id)
-    db.execute("INSERT INTO #{ListingTag.table_name} (listing_id, tag_id) VALUES (?, ?)", @id, tag_id)
+  def add_tag(tag_slug)
+    db.execute("INSERT INTO #{ListingTag.table_name} (listing_id, tag_id) VALUES (?, ?)", @id, tag_slug)
   end
 
   def clear_tags
