@@ -133,6 +133,15 @@ post '/request-reset-password' do
   redirect '/login'
 end
 
+post '/user/:id/admin' do
+  user = User.find_by_id(params[:id])
+  raise Sinatra::NotFound unless user
+  return forbidden unless current_user.admin
+
+  user.admin = params[:admin].to_i == 1
+  redirect "/user/#{user.id}"
+end
+
 # Creates a user
 # @param name [String] The name of the user
 # @param email [String] The email of the user

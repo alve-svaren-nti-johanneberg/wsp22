@@ -5,6 +5,15 @@ article.card
       |#{user.name}s profil
       - if user == current_user
         a.fa.no-underline.float-right href="/user/edit" 
+      - elsif current_user&.admin
+        form.inline action="/user/#{user.id}/admin" method="post"
+          - if user.admin        
+            input type="hidden" name="admin" value="0"
+            input.fa.float-right.secondary title="Ta bort administratör" type="submit" value=""
+          - else
+            input type="hidden" name="admin" value="1"
+            input.fa.float-right.secondary title="Gör till administratör" type="submit" value=""
+
 
     - if user.admin
       p.admin

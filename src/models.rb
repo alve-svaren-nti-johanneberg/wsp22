@@ -144,6 +144,11 @@ class User < DbModel
       postal_code = ? WHERE id = ?", name, email, postal_code, @id)
     update_password(password) if password
   end
+
+  # @param value [Boolean]
+  def admin=(value)
+    db.execute("UPDATE #{table_name} SET admin = ? WHERE id = ?", value ? 1 : 0, @id)
+  end
 end
 
 # An listing that a user created

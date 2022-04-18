@@ -12,6 +12,7 @@ require_relative 'models'
 # Module for utility functions
 module Utils
   def jwt_secret
+    warn 'JWT_SECRET is not set, using fallback secret' unless @jwt_secret
     @jwt_secret ||= ENV['JWT_SECRET'] || 'fallbacksecret'
   end
 
@@ -144,17 +145,16 @@ module Utils
 
   # @param user [User]
   def send_reset_email(user)
-    p jwt_secret
+    raise 'No mailgun key set' unless ENV['MAILGUN_KEY']
+
     token = JWT.encode(
-      { iat: Time.now.to_i, sub: user.id, sum: get_short_hash(user.password_hash) }, jwt_secret, 'HS256'
+      { iat: Time.now.to_i, sub: user.id,
+        sum: get_short_hash(user.password_hash) },
+      jwt_secret, 'HS256'
     )
-
-    # user.update(reset_token: token, reset_sent_at: Time.zone.now)
-
     url = "#{request.base_url}/reset-password?token=#{token}"
 
     client = Mailgun::Client.new(ENV['MAILGUN_KEY'], 'api.eu.mailgun.net')
-
     mail = Mailgun::MessageBuilder.new
     mail.from('noreply@blocketklon.svaren.dev', { 'first' => 'Blocketklon' })
     mail.add_recipient(:to, user.email)
