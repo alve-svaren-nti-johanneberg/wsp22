@@ -75,6 +75,10 @@ a {
     padding: 0;
     margin-bottom: 2rem;
 
+    &.sold {
+        opacity: 0.6;
+    }
+
     p {
         margin: 0;
     }
@@ -96,6 +100,7 @@ a {
 
         .card-image {
             width: auto;
+            position: relative;
         }
     }
 }
@@ -479,7 +484,7 @@ form.wide-form {
     }
 }
 
-.option-form {
+.actions {
     display: flex;
     gap: 1rem;
 }
@@ -579,6 +584,7 @@ textarea,
 
 .inline {
     display: inline;
+    margin: 0;
 }
 
 .button,

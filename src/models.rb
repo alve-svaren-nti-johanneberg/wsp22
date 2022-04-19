@@ -151,6 +151,7 @@ class User < DbModel
   # @param value [Boolean]
   def admin=(value)
     db.execute("UPDATE #{table_name} SET admin = ? WHERE id = ?", value ? 1 : 0, @id)
+    @admin = value
   end
 end
 
@@ -287,6 +288,12 @@ class Listing < DbModel
   def clear_tags
     db.execute("DELETE FROM #{ListingTag.table_name} WHERE listing_id = ?", @id)
     @tags = []
+  end
+
+  # @param value [Boolean]
+  def sold=(value)
+    db.execute("UPDATE #{table_name} SET sold = ? WHERE id = ?", value ? 1 : 0, @id)
+    @sold = value
   end
 end
 

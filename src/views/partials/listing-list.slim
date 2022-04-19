@@ -1,6 +1,6 @@
 ul.listing-list class=((defined? user_page) && user_page ? "user-listing-list" : "")
   - listings.each do |listing|
-    li.listed-listing
+    li.listed-listing class=("sold" if listing.sold)
       a href="/listing/#{listing.id}"
         article.card
             - if listing.image_name
@@ -8,6 +8,6 @@ ul.listing-list class=((defined? user_page) && user_page ? "user-listing-list" :
             div.card-indent.fully-pad.slim
               header
                 div.card-title
-                  h1 = listing.title
+                  h1 = listing.title + (listing.sold ? " (såld)" : "")
                   span.price = get_human_readable_price(listing.price)
               p.info = listing_position(listing)

@@ -148,6 +148,15 @@ get '/search' do
   slim :'listing/search', locals: { listings: listings }
 end
 
+post '/listing/:id/sold' do
+  listing = Listing.find_by_id(params[:id])
+  raise Sinatra::NotFound unless listing
+  return forbidden unless current_user == listing.seller
+
+  listing.sold = params[:sold].to_i == 1
+  redirect "/listing/#{listing.id}"
+end
+
 # Deletes an listing
 # @param :id [String] The id of the listing to delete
 post '/listing/:id/delete' do

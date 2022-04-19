@@ -4,10 +4,10 @@ article.card
   div.card-indent
     header
       div.card-title
-        h1 = listing.title
+        h1 = listing.title + (listing.sold ? " (såld)" : "")
         span.price = get_human_readable_price(listing.price)
       p.seller-info
-        | säljs av 
+        | #{listing.sold ? "såldes" : "säljs"} av 
         a href="/user/#{listing.seller.id}" = listing.seller.name
         |  · #{listing_position(listing)}
     section.description
@@ -17,10 +17,18 @@ article.card
       section.tags
         p.bold Taggar
         == slim :'partials/tag-list', locals: { tags: listing.tags }
-    - if listing.seller == current_user || current_user&.admin
-      form.option-form action="/listing/#{listing.id}/delete" method="post"
-        - if listing.seller == current_user
+    section.actions
+      - if listing.seller == current_user
           a.button href="/listing/#{listing.id}/edit" Redigera annons
-        input.destructive type="submit" value="Ta bort annons"
-    - unless listing.seller == current_user
-      a.button.full-width.message-icon-prefix href="/message/#{listing.id}" Skicka meddelande
+          form.inline action="/listing/#{listing.id}/sold" method="post"
+            - if listing.sold
+              input type="hidden" name="sold" value="0"
+              input.destructive title="Just nu är varan inte synlig i sökningar" type="submit" value="Gör tillgänglig att köpa"
+            - else
+              input type="hidden" name="sold" value="1"
+              input.destructive title="Om varan markeras som såld syns den inte i sökningar" type="submit" value="Markera som såld"
+      - if current_user&.admin
+        form.option-form.inline action="/listing/#{listing.id}/delete" method="post"
+          input.destructive type="submit" value="Ta bort annons"
+      - unless listing.seller == current_user
+        a.button.full-width.message-icon-prefix href="/message/#{listing.id}" Skicka meddelande
