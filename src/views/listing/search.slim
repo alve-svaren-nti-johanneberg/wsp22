@@ -24,7 +24,7 @@ div.search-container
         header.bold Taggar
         select.flat.tag-select multiple="" name="tags[]"
           - Tag.all.each do |tag|
-              option value="#{tag.slug}" selected=("selected" if params[:tags]&.include? tag.slug) #{tag.name} (#{tag.listings.count})
+              option value="#{tag.slug}" selected=("selected" if params[:tags]&.include? tag.slug) #{tag.name} (#{tag.live_listings.count})
 
       button.full-width.filter-icon-prefix type="submit" Filtrera
       a.no-underline href="/search?query=#{params[:query]}" Rensa filter

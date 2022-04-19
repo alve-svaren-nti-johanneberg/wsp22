@@ -418,6 +418,10 @@ class Tag < DbModel
     end
   end
 
+  def live_listings
+    listings.reject(&:sold)
+  end
+
   def self.create(name)
     slug = name.downcase.gsub(/[^a-z0-9]+/, '-')
     return nil if find_by_slug(slug)
