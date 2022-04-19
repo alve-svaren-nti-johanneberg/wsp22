@@ -12,7 +12,7 @@ require_relative 'models'
 # Module for utility functions
 module Utils
   def jwt_secret
-    warn 'JWT_SECRET is not set, using fallback secret' unless @jwt_secret
+    warn 'JWT_SECRET is not set, using fallback secret' unless ENV['JWT_SECRET']
     @jwt_secret ||= ENV['JWT_SECRET'] || 'fallbacksecret'
   end
 
