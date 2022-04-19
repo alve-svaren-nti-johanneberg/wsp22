@@ -35,27 +35,11 @@ post '/listing/new' do
     return redirect '/listing/new'
   end
 
-  new_name = nil
-
-  if params[:cover]
-    imagefile = params[:cover][:tempfile]
-    # filename = params[:cover][:filename]
-    # extension = filename.split('.').last
-    new_name = "#{SecureRandom.uuid}.jpg"
-    data = imagefile.read
-
-    new_file_name = File.join(File.dirname(__FILE__), "../userimgs/#{new_name}")
-
-    image = Magick::Image.from_blob(data).first
-    image.format = 'jpeg'
-    File.open(new_file_name, 'wb') do |f|
-      image.resize_to_fit(720 * 4, 320 * 4).write(f) { self.quality = 70 }
-    end
-  end
+  imagefile = params[:cover][:tempfile] if params[:cover]
 
   listing = Listing.create(
     params[:title], params[:content], params[:price].to_i,
-    current_user.id, postal_code, new_name, params[:tags] || []
+    current_user.id, postal_code, imagefile&.read, params[:tags] || []
   )
   RATE_LIMITS[:create_listing][current_user.id] = Time.now.to_f
   redirect "/listing/#{listing.id}"
@@ -99,28 +83,11 @@ post '/listing/:id/update' do
     return redirect '/listing/new'
   end
 
-  new_name = nil
-
-  if params[:cover]
-    File.delete("userimgs/#{listing.image_name}") if listing.image_name
-    imagefile = params[:cover][:tempfile]
-    # filename = params[:cover][:filename]
-    # extension = filename.split('.').last
-    new_name = "#{SecureRandom.uuid}.jpg"
-    data = imagefile.read
-
-    new_file_name = "../userimgs/#{new_name}"
-
-    image = Magick::Image.from_blob(data).first
-    image.format = 'jpeg'
-    File.open(new_file_name, 'wb') do |f|
-      image.resize_to_fit(720 * 4, 320 * 4).write(f) { self.quality = 70 }
-    end
-  end
+  imagefile = params[:cover][:tempfile] if params[:cover]
 
   listing.update(
     params[:title], params[:content], params[:price].to_i,
-    current_user.id, postal_code, new_name || listing.image_name, params[:tags]
+    current_user.id, postal_code, imagefile&.read, params[:tags]
   )
 
   redirect "/listing/#{listing.id}"
@@ -163,6 +130,7 @@ get '/search' do
   listings = Listing.search((params[:query] || '').split(' '))
   listings.keep_if do |listing|
     filters = []
+    filters << !listing.sold
     filters << (listing.price <= params[:max_price].to_i if params[:max_price] && !params[:max_price].empty?)
     filters << (listing.price >= params[:min_price].to_i if params[:min_price] && !params[:min_price].empty?)
     filters << ((if params[:tags]

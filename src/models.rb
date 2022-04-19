@@ -184,9 +184,24 @@ class Listing < DbModel
     @title = data['title']
     @postal_code = data['postal_code']
     @content = data['content']
-    @sold = data['sold']
+    @sold = data['sold'] == 1
     @image_name = data['image_name']
     @created_at = Time.at(data['created_at'])
+  end
+
+  # @param image_data [String]
+  def self.save_image(image_data)
+    image_name = "#{SecureRandom.uuid}.jpg"
+
+    new_file_name = File.join(File.dirname(__FILE__), "userimgs/#{image_name}")
+
+    imageobj = Magick::Image.from_blob(image_data).first
+    imageobj.format = 'jpeg'
+    File.open(new_file_name, 'wb') do |f|
+      imageobj.resize_to_fit(720 * 4, 320 * 4).write(f) { self.quality = 70 }
+    end
+
+    image_name
   end
 
   # @param title [String]
@@ -194,13 +209,18 @@ class Listing < DbModel
   # @param price [Integer]
   # @param seller_id [Integer]
   # @param postal_code [String, Integer]
+  # @param image_data [String, nil]
   # @param tags [Array<Integer>]
-  def self.create(title, content, price, seller_id, postal_code, image_name, tags)
+  def self.create(title, content, price, seller_id, postal_code, image_data, tags)
+    image_name = save_image(image_data) if image_data
+
     session = db
     session.execute("INSERT INTO #{table_name}
       (title, content, price, seller_id, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     title, content, price, seller_id, postal_code, image_name, Time.now.to_i)
     listing = find_by_id(session.last_insert_row_id)
+    
+    p tags
     tags.each do |tag_slug|
       listing.add_tag(tag_slug)
     end
@@ -212,8 +232,11 @@ class Listing < DbModel
   # @param price [Integer]
   # @param seller_id [Integer]
   # @param postal_code [String, Integer]
-  # @param tags [Array<Integer>]
-  def update(title, content, price, seller_id, postal_code, image_name, tags)
+  # @param image_data [String, nil]
+  # @param new_tags [Array<Integer>]
+  def update(title, content, price, seller_id, postal_code, image_data, new_tags)
+    new_image_name = image_data ? self.class.save_image(image_data) : @image_name
+
     session = db
     session.execute("UPDATE #{table_name} SET
       title = ?,
@@ -222,10 +245,10 @@ class Listing < DbModel
       seller_id = ?,
       postal_code = ?,
       image_name = ?,
-      created_at = ? WHERE id = ?", title, content, price, seller_id, postal_code, image_name, Time.now.to_i, id)
+      created_at = ? WHERE id = ?", title, content, price, seller_id, postal_code, new_image_name, Time.now.to_i, id)
 
     clear_tags
-    tags.each do |tag_slug|
+    (new_tags || []).each do |tag_slug|
       add_tag(tag_slug)
     end
   end
@@ -263,6 +286,7 @@ class Listing < DbModel
 
   def clear_tags
     db.execute("DELETE FROM #{ListingTag.table_name} WHERE listing_id = ?", @id)
+    @tags = []
   end
 end
 
