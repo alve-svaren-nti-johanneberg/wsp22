@@ -33,7 +33,7 @@ post '/user/edit' do
     session[:form_error] = 'Lösenordet stämmer inte'
     return redirect '/user/edit'
   end
-  p params.to_h
+
   current_user.update(params[:name], params[:email], params[:postal_code], params[:new_password])
   redirect "/user/#{current_user.id}"
 end

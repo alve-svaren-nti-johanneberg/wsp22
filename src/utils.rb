@@ -168,7 +168,6 @@ module Utils
   # @param token [String]
   # @return [User, nil]
   def check_valid_token(token)
-    p jwt_secret
     payload = nil
     return nil unless token
 

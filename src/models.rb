@@ -220,8 +220,7 @@ class Listing < DbModel
       (title, content, price, seller_id, postal_code, image_name, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
                     title, content, price, seller_id, postal_code, image_name, Time.now.to_i)
     listing = find_by_id(session.last_insert_row_id)
-    
-    p tags
+
     tags.each do |tag_slug|
       listing.add_tag(tag_slug)
     end
@@ -321,7 +320,8 @@ class Message < DbModel
   # @param user [User]
   # @param listing [Listing]
   def self.conversation(user, listing)
-    db.execute("SELECT * FROM #{table_name} WHERE customer_id = ? AND listing_id = ?", user.id, listing.id).map do |data|
+    db.execute("SELECT * FROM #{table_name} WHERE customer_id = ? AND listing_id = ?", user.id,
+               listing.id).map do |data|
       new(data)
     end
   end
