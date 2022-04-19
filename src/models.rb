@@ -270,6 +270,7 @@ class Listing < DbModel
   def delete
     db.execute("DELETE FROM #{table_name} WHERE id = ?", @id)
     db.execute("DELETE FROM #{Message.table_name} WHERE listing_id = ?", @id)
+    db.execute("DELETE FROM #{ListingTag.table_name} WHERE listing_id = ?", @id)
     File.delete(File.join(File.dirname(__FILE__), "userimgs/#{@image_name}")) if @image_name
   end
 
