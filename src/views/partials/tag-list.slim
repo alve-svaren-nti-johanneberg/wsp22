@@ -1,5 +1,5 @@
 ul.tag-list
-  - tags.compact.each do |tag|
+  - tags.each do |tag|
     li.listed-tag title="Det finns #{tag.live_listings.count} annons#{(tag.live_listings.count) > 1 ? 'er' : ''} med denna taggen"
       a href="/search?tags[]=#{tag.slug}" 
         | #{tag.name}

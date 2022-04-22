@@ -277,7 +277,7 @@ class Listing < DbModel
   def tags
     @tags ||= begin
       data = db.execute("SELECT * FROM #{ListingTag.table_name} WHERE listing_id = ?", @id)
-      data.map { |tag| Tag.find_by_id(tag['tag_id']) }
+      data.map { |tag| Tag.find_by_id(tag['tag_id']) }.compact
     end
   end
 
