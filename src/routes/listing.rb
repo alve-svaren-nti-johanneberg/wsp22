@@ -70,6 +70,8 @@ end
 post '/listing/:id/update' do
   listing = Listing.find_by_id(params[:id])
 
+  raise Sinatra::NotFound unless listing
+
   postal_code = params[:postal_code].delete(' ').delete('-').to_i
   error = valid_listing_post?(params)
 
