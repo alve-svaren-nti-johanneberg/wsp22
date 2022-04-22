@@ -13,7 +13,7 @@ def valid_listing_post?(params)
   error = 'Du måste ange en beskrivning' if params[:content].empty?
   error = 'Du måste ange en titel' if params[:title].empty?
   error = 'Titeln får inte vara längre än 64 tecken' if params[:title].length > 64
-  error = 'Postnummret måste vara ett riktigt postnummer' if valid_postal_code?(postal_code)
+  error = 'Postnummret måste vara ett riktigt postnummer' unless valid_postal_code?(postal_code)
   error = 'Minst en av dina taggar finns inte' unless (params[:tags] || []).all? { |tag| Tag.find_by_name(tag) }
 
   error
