@@ -138,13 +138,14 @@ post '/reset-password' do
 end
 
 post '/request-reset-password' do
-  return too_many_requests('/register') unless Time.now.to_f - RATE_LIMITS[:reset_email][request.ip] > 10
+  return too_many_requests('/request-reset-password') unless Time.now.to_f - RATE_LIMITS[:reset_email][request.ip] > 10
 
   user = User.find_by_email(params[:email])
   session[:form_error] = 'Mailadressen kunde inte hittas' unless user
   return redirect '/request-reset-password' unless user
 
   send_reset_email(user)
+  RATE_LIMITS[:reset_email][request.ip] = Time.now.to_f
   session[:msg] = "Ett mail har skickats till #{params[:email]}"
   session[:success] = true
   redirect '/login'
