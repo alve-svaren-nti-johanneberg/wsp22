@@ -5,6 +5,20 @@ get '/listing/new' do
   slim :'listing/edit_or_create'
 end
 
+def valid_listing_post?(params)
+  error = nil
+  postal_code = params[:postal_code].delete(' ').delete('-').to_i
+  error = 'Priset måste vara positivt' if params[:price].to_i.negative?
+  error = 'Priset får inte vara mer än 1000 miljarder kr' if params[:price].to_i > 1e12
+  error = 'Du måste ange en beskrivning' if params[:content].empty?
+  error = 'Du måste ange en titel' if params[:title].empty?
+  error = 'Titeln får inte vara längre än 64 tecken' if params[:title].length > 64
+  error = 'Postnummret måste vara ett riktigt postnummer' if valid_postal_code?(postal_code)
+  error = 'Minst en av dina taggar finns inte' unless (params[:tags] || []).all? { |tag| Tag.find_by_name(tag) }
+
+  error
+end
+
 # Create a new listing
 # @param title [String] The title of the listing
 # @param content [String] The body of the listing
@@ -17,17 +31,8 @@ end
 post '/listing/new' do
   return too_many_requests('/listing/new') unless Time.now.to_f - RATE_LIMITS[:create_listing][current_user.id] > 10
 
-  error = nil
-
   postal_code = params[:postal_code].delete(' ').delete('-').to_i
-  error = 'Postnummret måste vara 5 siffror' unless postal_code.to_s.length == 5
-  error = 'Priset måste vara positivt' if params[:price].to_i.negative?
-  error = 'Priset får inte vara mer än 1000 miljarder kr' if params[:price].to_i > 1e12
-  error = 'Du måste ange ett postnummer' if params[:postal_code].empty?
-  error = 'Du måste ange en beskrivning' if params[:content].empty?
-  error = 'Du måste ange en titel' if params[:title].empty?
-  error = 'Titeln får inte vara längre än 64 tecken' if params[:title].length > 64
-  error = 'Postnummret måste vara ett riktigt postnummer' if postal_codes[postal_code.to_s].nil?
+  error = valid_listing_post?(params)
 
   if error
     session[:old_data] = params
@@ -65,22 +70,13 @@ end
 post '/listing/:id/update' do
   listing = Listing.find_by_id(params[:id])
 
-  error = nil
-
   postal_code = params[:postal_code].delete(' ').delete('-').to_i
-  error = 'Postnummret måste vara 5 siffror' unless postal_code.to_s.length == 5
-  error = 'Priset måste vara positivt' if params[:price].to_i.negative?
-  error = 'Priset får inte vara mer än 1000 miljarder kr' if params[:price].to_i > 1e12
-  error = 'Du måste ange ett postnummer' if params[:postal_code].empty?
-  error = 'Du måste ange en beskrivning' if params[:content].empty?
-  error = 'Du måste ange en titel' if params[:title].empty?
-  error = 'Titeln får inte vara längre än 64 tecken' if params[:title].length > 64
-  error = 'Postnummret måste vara ett riktigt postnummer' if postal_codes[postal_code.to_s].nil?
+  error = valid_listing_post?(params)
 
   if error
     session[:old_data] = params
     session[:form_error] = error
-    return redirect '/listing/new'
+    return redirect "/listing/#{listing.id}/edit"
   end
 
   imagefile = params[:cover][:tempfile] if params[:cover]

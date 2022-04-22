@@ -14,15 +14,15 @@ include Utils
 
 also_reload('models.rb', 'utils.rb', 'routes.rb', *Dir.glob('routes/*.rb'))
 
-configure :development do
-  # require 'rack-livereload'
+# configure :development do
+#   # require 'rack-livereload'
 
-  # use Rack::LiveReload, source: :vendored
+#   # use Rack::LiveReload, source: :vendored
 
-  # @guard ||= Thread.new do
-  #   system('bundle exec guard')
-  # end
-end
+#   # @guard ||= Thread.new do
+#   #   system('bundle exec guard')
+#   # end
+# end
 
 enable :sessions
 

@@ -420,7 +420,7 @@ class Tag < DbModel
   end
 
   def live_listings
-    listings.reject(&:sold)
+    listings.compact.reject(&:sold)
   end
 
   def self.create(name)

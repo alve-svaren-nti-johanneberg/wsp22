@@ -32,8 +32,18 @@ module Utils
   # Validates an email address
   # @param email [String]
   # @return [Boolean]
-  def validate_email(email)
+  def valid_email?(email)
     (/\A[a-z0-9+-_.]+@[a-z\d\-.]+\.[a-z]+\z/i).match?(email)
+  end
+
+  # @param postal_code [String, Integer]
+  def valid_postal_code?(postal_code)
+    postal_code = postal_code.to_s
+    return false unless postal_code.length == 5
+    return false unless postal_code.to_i.to_s == postal_code
+    return false unless postal_codes.include?(postal_code)
+
+    true
   end
 
   # Returns a string with the given number grouped by 3, or the specified length
