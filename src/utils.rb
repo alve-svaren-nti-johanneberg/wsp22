@@ -93,7 +93,7 @@ module Utils
   # @param lon1 [Float]
   # @param lat2 [Float]
   # @param lon2 [Float]
-  # @return [Float]
+  # @return [Float] Distance between points in kilometers
   def get_distance(lat1, lon1, lat2, lon2)
     rad_per_deg = Math::PI / 180
 
@@ -106,7 +106,7 @@ module Utils
 
     c = 2 * Math.asin(Math.sqrt(haversine))
 
-    earth_radius * c * 1000
+    earth_radius * c
   end
 
   # Returns the distance between two postal codes in meters
@@ -128,7 +128,7 @@ module Utils
   # @param listing [Listing]
   # @return [String]
   def human_readable_distance(listing)
-    distance = postal_code_distance(current_user.postal_code, listing.postal_code) / 1000
+    distance = postal_code_distance(current_user.postal_code, listing.postal_code)
     text = "#{group_number(distance.to_i)} km"
     text = 'Inom 2 km' if distance < 2
 
