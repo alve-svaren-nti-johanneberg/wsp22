@@ -34,7 +34,22 @@ post '/user/edit' do
     return redirect '/user/edit'
   end
 
-  current_user.update(params[:name], params[:email], params[:postal_code], params[:new_password])
+  postal_code = params[:postal_code].delete(' ').delete('-').to_i
+  error = 'Postnummret måste vara ett riktigt postnummer' unless valid_postal_code?(postal_code)
+  error = 'Du måste ange ett namn' if params[:name] && params[:name].empty?
+  error = 'Du måste ange en giltig e-postadress' unless valid_email?(params[:email])
+  error = 'Ditt namn måste vara kortare än 16 tecken' if (params[:name]&.length || 0) > 17
+  unless params[:name].match?(/^[äÄöÖåÅa-zA-Z\-_0-9]+$/)
+    error = 'Ditt namn måste bestå av endast bokstäver, bindestreck och understreck'
+  end
+
+  if error
+    session[:old_data] = params
+    session[:form_error] = error
+    return redirect '/user/edit'
+  end
+
+  current_user.update(params[:name], params[:email], postal_code, params[:new_password])
   redirect "/user/#{current_user.id}"
 end
 
@@ -123,11 +138,14 @@ post '/reset-password' do
 end
 
 post '/request-reset-password' do
+  return too_many_requests('/request-reset-password') unless Time.now.to_f - RATE_LIMITS[:reset_email][request.ip] > 10
+
   user = User.find_by_email(params[:email])
   session[:form_error] = 'Mailadressen kunde inte hittas' unless user
   return redirect '/request-reset-password' unless user
 
   send_reset_email(user)
+  RATE_LIMITS[:reset_email][request.ip] = Time.now.to_f
   session[:msg] = "Ett mail har skickats till #{params[:email]}"
   session[:success] = true
   redirect '/login'
@@ -155,11 +173,11 @@ post '/register' do
   return too_many_requests('/register') unless Time.now.to_f - RATE_LIMITS[:register][request.ip] > 10
 
   postal_code = params[:postal_code].delete(' ').delete('-').to_i
-  error = 'Postnummret måste vara 5 siffror' unless postal_code.to_s.length == 5
+  error = 'Postnummret måste vara ett riktigt postnummer' unless valid_postal_code?(postal_code)
   error = 'Lösenorden matchar inte' unless params[:password] == params[:'confirm-password']
   error = 'Du måste ange ett lösenord' if params[:password] && params[:password].empty?
   error = 'Du måste ange ett namn' if params[:name] && params[:name].empty?
-  error = 'Du måste ange en giltig e-postadress' unless validate_email(params[:email])
+  error = 'Du måste ange en giltig e-postadress' unless valid_email?(params[:email])
   error = 'Ditt namn måste vara kortare än 16 tecken' if (params[:name]&.length || 0) > 17
   unless params[:name].match?(/^[äÄöÖåÅa-zA-Z\-_0-9]+$/)
     error = 'Ditt namn måste bestå av endast bokstäver, bindestreck och understreck'

@@ -32,8 +32,18 @@ module Utils
   # Validates an email address
   # @param email [String]
   # @return [Boolean]
-  def validate_email(email)
+  def valid_email?(email)
     (/\A[a-z0-9+-_.]+@[a-z\d\-.]+\.[a-z]+\z/i).match?(email)
+  end
+
+  # @param postal_code [String, Integer]
+  def valid_postal_code?(postal_code)
+    postal_code = postal_code.to_s
+    return false unless postal_code.length == 5
+    return false unless postal_code.to_i.to_s == postal_code
+    return false unless postal_codes.include?(postal_code)
+
+    true
   end
 
   # Returns a string with the given number grouped by 3, or the specified length
@@ -83,7 +93,7 @@ module Utils
   # @param lon1 [Float]
   # @param lat2 [Float]
   # @param lon2 [Float]
-  # @return [Float]
+  # @return [Float] Distance between points in kilometers
   def get_distance(lat1, lon1, lat2, lon2)
     rad_per_deg = Math::PI / 180
 
@@ -96,7 +106,7 @@ module Utils
 
     c = 2 * Math.asin(Math.sqrt(haversine))
 
-    earth_radius * c * 1000
+    earth_radius * c
   end
 
   # Returns the distance between two postal codes in meters
@@ -118,7 +128,7 @@ module Utils
   # @param listing [Listing]
   # @return [String]
   def human_readable_distance(listing)
-    distance = postal_code_distance(current_user.postal_code, listing.postal_code) / 1000
+    distance = postal_code_distance(current_user.postal_code, listing.postal_code)
     text = "#{group_number(distance.to_i)} km"
     text = 'Inom 2 km' if distance < 2
 
