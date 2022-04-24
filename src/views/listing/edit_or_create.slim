@@ -24,7 +24,9 @@ article.card
 javascript: 
   const cover = document.querySelector("#cover");
   const updatePicture = () => {
-    document.querySelector("#preview-picture").src = URL.createObjectURL(cover.files[0])
+    if (cover.files?.length > 0) {
+      document.querySelector("#preview-picture").src = URL.createObjectURL(cover.files[0])
+    }
   }
   cover.addEventListener("change", updatePicture);
   updatePicture();

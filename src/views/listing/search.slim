@@ -38,11 +38,11 @@ div.search-container
 javascript:
     const updateSlider = () => {
       let slider = document.querySelector("#distance-slider");
-      let value = slider.valueAsNumber;
-      if (value == slider.max) {
+      let value = slider?.valueAsNumber;
+      if (value == slider?.max) {
         value = "Alla avstånd";
       }
-      document.querySelector("#distance-value").innerHTML = typeof value === 'string' ? value : `&lt; ${value} km`;
+      (document.querySelector("#distance-value") || {}).innerHTML = typeof value === 'string' ? value : `&lt; ${value} km`;
     }
-    document.querySelector("#distance-slider").addEventListener("input", updateSlider);
+    document.querySelector("#distance-slider")?.addEventListener("input", updateSlider);
     updateSlider();
