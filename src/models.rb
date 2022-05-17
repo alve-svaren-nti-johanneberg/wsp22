@@ -211,7 +211,7 @@ class Listing < DbModel
   # @param seller_id [Integer]
   # @param postal_code [String, Integer]
   # @param image_data [String, nil]
-  # @param tags [Array<Integer>]
+  # @param tags [Array<String>]
   def self.create(title, content, price, seller_id, postal_code, image_data, tags)
     image_name = save_image(image_data) if image_data
 
@@ -233,7 +233,7 @@ class Listing < DbModel
   # @param seller_id [Integer]
   # @param postal_code [String, Integer]
   # @param image_data [String, nil]
-  # @param new_tags [Array<Integer>]
+  # @param new_tags [Array<String>]
   def update(title, content, price, seller_id, postal_code, image_data, new_tags)
     new_image_name = image_data ? self.class.save_image(image_data) : @image_name
 
@@ -282,7 +282,9 @@ class Listing < DbModel
   end
 
   def add_tag(tag_slug)
-    db.execute("INSERT INTO #{ListingTag.table_name} (listing_id, tag_id) VALUES (?, ?)", @id, tag_slug)
+    tag = Tag.find_by_slug(tag_slug)
+    p tag, tag_slug
+    db.execute("INSERT INTO #{ListingTag.table_name} (listing_id, tag_id) VALUES (?, ?)", @id, tag.id)
   end
 
   def clear_tags

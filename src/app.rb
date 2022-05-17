@@ -12,7 +12,7 @@ require_relative 'routes'
 
 include Utils
 
-also_reload('models.rb', 'utils.rb', 'routes.rb', *Dir.glob('routes/*.rb'))
+also_reload('src/models.rb', 'src/utils.rb', 'src/routes.rb', *Dir.glob('src/routes/*.rb'))
 
 # configure :development do
 #   # require 'rack-livereload'

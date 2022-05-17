@@ -18,7 +18,7 @@ article.card
         | Taggar
         select.flat.tag-select multiple="" name="tags[]"
           - Tag.all.each do |tag|
-              option value="#{tag.id}" selected=("selected" if listing&.tags&.include? tag) #{tag.name} (#{tag.live_listings.count})
+              option value="#{tag.slug}" selected=("selected" if listing&.tags&.include? tag) #{tag.name} (#{tag.live_listings.count})
       input.full-width type="submit" value="#{listing ? "Uppdatera annons" : "Skapa annons"}"
 
 javascript: 

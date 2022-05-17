@@ -35,7 +35,7 @@ post '/listing/new' do
   error = valid_listing_post?(params)
 
   if error
-    session[:old_data] = params
+    # session[:old_data] = params
     session[:form_error] = error
     return redirect '/listing/new'
   end
@@ -76,7 +76,7 @@ post '/listing/:id/update' do
   error = valid_listing_post?(params)
 
   if error
-    session[:old_data] = params
+    # session[:old_data] = params
     session[:form_error] = error
     return redirect "/listing/#{listing.id}/edit"
   end

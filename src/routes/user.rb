@@ -44,7 +44,7 @@ post '/user/edit' do
   end
 
   if error
-    session[:old_data] = params
+    # session[:old_data] = params
     session[:form_error] = error
     return redirect '/user/edit'
   end
@@ -184,7 +184,7 @@ post '/register' do
   end
 
   if error
-    session[:old_data] = params
+    # session[:old_data] = params
     session[:form_error] = error
     return redirect '/register'
   end
@@ -195,7 +195,7 @@ post '/register' do
     redirect(temp_session(:return_to) || '/')
   else
     session[:form_error] = 'Mailadress är redan registrerad'
-    session[:old_data] = params
+    # session[:old_data] = params
     redirect '/register'
   end
 end
@@ -213,7 +213,7 @@ post '/login' do
   else
     RATE_LIMITS[:login][request.ip] = Time.now.to_f
     session[:form_error] = 'Felaktig mailadress eller lösenord'
-    session[:old_data] = params
+    # session[:old_data] = params
     redirect '/login'
   end
 end
